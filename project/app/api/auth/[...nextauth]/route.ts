@@ -2,14 +2,13 @@ import NextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import dbConnect from '@/lib/db/connect';
-import { User } from '@/lib/db/models/User';
+import { authenticateUser, findUserByEmail, createUser, UserRole } from '@/database';
 
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -23,35 +22,24 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          await dbConnect();
-
-          // Find user by email
-          const user = await User.findOne({ email: credentials.email }).select('+password');
+          // Authenticate user with email and password
+          const user = authenticateUser(credentials.email, credentials.password);
 
           if (!user) {
-            console.log('User not found:', credentials.email);
-            return null;
-          }
-
-          // For demo purposes, we're using a simple password check
-          // In a real app, you would use bcrypt.compare
-          const isValidPassword = user.password === credentials.password;
-
-          if (!isValidPassword) {
-            console.log('Invalid password for user:', credentials.email);
+            console.log('Authentication failed for:', credentials.email);
             return null;
           }
 
           console.log('User authenticated successfully:', user.email);
           return {
-            id: user._id.toString(),
+            id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role || 'user',
+            role: user.role,
             image: user.image,
           };
         } catch (error) {
-          console.error('Error in authorize:', error);
+          console.error('Error during authentication:', error);
           return null;
         }
       }
@@ -61,17 +49,19 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          await dbConnect();
-
-          const existingUser = await User.findOne({ email: user.email });
+          // Check if user exists
+          const existingUser = findUserByEmail(user.email);
 
           if (!existingUser) {
-            await User.create({
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              role: 'user',
-            });
+            // Create a new user for Google sign-in
+            createUser(
+              user.name || 'Google User',
+              user.email,
+              // Generate a random password for Google users
+              Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8),
+              UserRole.USER
+            );
+            console.log(`Created new user from Google sign-in: ${user.email}`);
           }
         } catch (error) {
           console.error("Error during sign in:", error);
@@ -83,12 +73,18 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session?.user) {
         try {
-          await dbConnect();
-          const dbUser = await User.findOne({ email: session.user.email });
+          // Get user from database
+          const dbUser = findUserByEmail(session.user.email);
+
           if (dbUser) {
-            session.user.id = dbUser._id.toString();
+            // Add user data to session
+            session.user.id = dbUser.id;
             session.user.role = dbUser.role;
             session.user.image = dbUser.image;
+
+            // Add custom properties
+            (session.user as any).status = dbUser.status;
+            (session.user as any).lastLogin = dbUser.lastLogin;
           }
         } catch (error) {
           console.error("Error getting session:", error);
@@ -104,6 +100,8 @@ export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt',
   },
+  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-for-development',
+  debug: process.env.NODE_ENV === 'development',
 };
 
 const handler = NextAuth(authOptions);

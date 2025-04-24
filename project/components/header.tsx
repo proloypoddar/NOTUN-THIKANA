@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { MoonIcon, SunIcon, Menu, Home, Calendar, MessageSquare, Building2, User, LogOut, Mail, Zap } from 'lucide-react';
+import { MoonIcon, SunIcon, Menu, Home, Calendar, MessageSquare, Building2, User, LogOut, Mail, Zap, Shield } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import {
   Sheet,
@@ -112,7 +112,7 @@ export default function Header() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile" className="cursor-pointer">
+                  <Link href="/profile" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
@@ -123,6 +123,14 @@ export default function Header() {
                     Messages
                   </Link>
                 </DropdownMenuItem>
+                {session?.user.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />

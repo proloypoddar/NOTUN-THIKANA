@@ -72,12 +72,35 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     fetchPostDetails();
   }, [params.id]);
 
-  const handleLikePost = () => {
-    setPostLikes(postLikes + 1);
-    toast({
-      title: 'Post liked',
-      description: 'You liked this post',
-    });
+  const handleLikePost = async () => {
+    try {
+      const response = await fetch(`/api/forums/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to like post');
+      }
+
+      const data = await response.json();
+      setPostLikes(data.likes);
+
+      toast({
+        title: data.liked ? 'Post liked' : 'Like removed',
+        description: data.liked ? 'You liked this post' : 'You removed your like from this post',
+      });
+    } catch (error) {
+      console.error('Error liking post:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to like post. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleLikeComment = (commentId: number) => {
@@ -91,28 +114,48 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     });
   };
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    const newCommentObj = {
-      id: comments.length + 1,
-      author: isAnonymous ? 'Anonymous' : 'Current User',
-      authorImage: isAnonymous ? '' : 'https://randomuser.me/api/portraits/men/32.jpg',
-      content: newComment,
-      date: new Date().toISOString().split('T')[0],
-      likes: 0,
-      isAnonymous,
-    };
+    try {
+      const response = await fetch(`/api/forums/${params.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newComment,
+          isAnonymous,
+        }),
+      });
 
-    setComments([...comments, newCommentObj]);
-    setNewComment('');
-    setIsAnonymous(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to post comment');
+      }
 
-    toast({
-      title: 'Reply posted',
-      description: 'Your reply has been posted successfully',
-    });
+      const newCommentData = await response.json();
+
+      // Add the new comment to the list
+      setComments([...comments, newCommentData]);
+
+      // Reset form
+      setNewComment('');
+      setIsAnonymous(false);
+
+      toast({
+        title: 'Reply posted',
+        description: 'Your reply has been posted successfully',
+      });
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to post comment. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (loading) {

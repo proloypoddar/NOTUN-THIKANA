@@ -1,0 +1,59 @@
+[
+  {
+    "id": "5a5430a7-eaf8-4fc8-8491-782d9b223a35",
+    "participants": [
+      "93d421a4-bf14-43b6-b63a-5c436442b3d5",
+      "7dcf220a-07d5-4a05-a375-8af4829faa97"
+    ],
+    "isGroup": false,
+    "isDeleted": false,
+    "deletedFor": [],
+    "unreadCount": {
+      "93d421a4-bf14-43b6-b63a-5c436442b3d5": 2,
+      "7dcf220a-07d5-4a05-a375-8af4829faa97": 3
+    },
+    "createdAt": "2025-04-23T18:16:38.981Z",
+    "updatedAt": "2025-04-23T18:16:38.985Z",
+    "lastMessageId": "92cb9ae9-d156-405f-8b25-8d8d9d7f483f",
+    "lastMessageText": "Perfect. I'll connect you with some landlords who have properties in that range.",
+    "lastMessageTime": "2025-04-23T18:16:38.985Z"
+  },
+  {
+    "id": "642312ea-5956-4486-a8d8-6aefc12d8986",
+    "participants": [
+      "7dcf220a-07d5-4a05-a375-8af4829faa97",
+      "66613153-d94a-41b6-87b4-383c0002dce0"
+    ],
+    "isGroup": false,
+    "isDeleted": false,
+    "deletedFor": [],
+    "unreadCount": {
+      "7dcf220a-07d5-4a05-a375-8af4829faa97": 2,
+      "66613153-d94a-41b6-87b4-383c0002dce0": 3
+    },
+    "createdAt": "2025-04-23T18:16:38.985Z",
+    "updatedAt": "2025-04-23T18:16:38.989Z",
+    "lastMessageId": "db234146-28b2-4bc5-b58a-c2dfb420596a",
+    "lastMessageText": "Saturday at 3 PM works for me. Please send me the address.",
+    "lastMessageTime": "2025-04-23T18:16:38.989Z"
+  },
+  {
+    "id": "fc45c6b5-fa9c-4c6c-9e8b-b7c13d0d0a7f",
+    "participants": [
+      "8bc987a0-83b7-4e5e-8e99-3fac3b2a741a",
+      "66613153-d94a-41b6-87b4-383c0002dce0"
+    ],
+    "isGroup": false,
+    "isDeleted": false,
+    "deletedFor": [],
+    "unreadCount": {
+      "8bc987a0-83b7-4e5e-8e99-3fac3b2a741a": 2,
+      "66613153-d94a-41b6-87b4-383c0002dce0": 3
+    },
+    "createdAt": "2025-04-23T18:16:38.990Z",
+    "updatedAt": "2025-04-23T18:16:38.994Z",
+    "lastMessageId": "63b25914-45a0-4fb6-95b0-66dc6681adc2",
+    "lastMessageText": "Excellent. Can we arrange a viewing for them next week?",
+    "lastMessageTime": "2025-04-23T18:16:38.993Z"
+  }
+]

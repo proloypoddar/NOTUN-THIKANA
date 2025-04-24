@@ -20,7 +20,23 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'landlord', 'admin'],
     default: 'user'
   },
+  phone: {
+    type: String,
+    trim: true
+  },
+  nid: {
+    type: String,
+    trim: true
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  lastActive: {
     type: Date,
     default: Date.now
   }

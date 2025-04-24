@@ -43,15 +43,48 @@ export default function CreatePostPage() {
 
     setIsSubmitting(true);
 
-    // In a real application, you would send this data to your API
-    // For now, we'll simulate a successful post creation
-    setTimeout(() => {
+    try {
+      // Process tags from comma-separated string to array
+      const tagArray = tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+
+      // Send data to API
+      const response = await fetch('/api/forums', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          content,
+          category,
+          tags: tagArray,
+          isAnonymous,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create post');
+      }
+
       toast({
         title: 'Post created',
         description: 'Your post has been published successfully',
       });
       router.push('/forums');
-    }, 1000);
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to create post. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
