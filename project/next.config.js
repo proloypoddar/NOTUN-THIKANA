@@ -4,6 +4,14 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Set the server port to 3010
+  serverRuntimeConfig: {
+    port: 3010,
+  },
+  // Set the public runtime config
+  publicRuntimeConfig: {
+    port: 3010,
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
