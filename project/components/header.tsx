@@ -67,7 +67,7 @@ export default function Header() {
         </Sheet>
 
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <span className="font-bold text-xl">Notun Thikana</span>
+          <span className="font-bold text-xl">Notun Thikana - Community Portal</span>
         </Link>
 
         <nav className="hidden lg:flex lg:gap-6 lg:items-center">
