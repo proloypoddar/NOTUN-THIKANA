@@ -34,7 +34,7 @@ export default function Home() {
                 isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
               }`}
             >
-World Become closer, Life Become Better
+Connecting Communities, Building Futures
             </h2>
 
             {/* Animated subtitle */}
