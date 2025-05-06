@@ -300,7 +300,7 @@ export default function ForumsPage() {
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Community Forums</h1>
-          <p className="text-muted-foreground">Join the conversation</p>
+          <p className="text-muted-foreground">Join the conversation and connect with your community</p>
         </div>
         <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
           <DialogTrigger asChild>
