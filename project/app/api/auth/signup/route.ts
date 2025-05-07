@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/connect';
 import { User } from '@/lib/db/models/User';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
@@ -25,12 +26,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // In a real application, you would hash the password here
-    // For demo purposes, we're storing the password as plain text
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await User.create({
       name,
       email,
-      password, // In a real app: password: await bcrypt.hash(password, 10),
+      password: hashedPassword,
       role: 'user',
     });
 

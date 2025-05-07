@@ -22,7 +22,14 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    trim: true
+    trim: true,
+    validate: {
+      validator: function(v: string) {
+        // Bangladesh phone number format: +8801XXXXXXXXX
+        return !v || /^\+880\d{10}$/.test(v);
+      },
+      message: props => `${props.value} is not a valid Bangladesh phone number! Format should be +8801XXXXXXXXX`
+    }
   },
   nid: {
     type: String,

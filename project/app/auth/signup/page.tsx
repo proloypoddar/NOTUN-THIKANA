@@ -15,19 +15,36 @@ export default function SignUp() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('+880');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+
+  // Validate Bangladesh phone number
+  const validateBangladeshPhone = (phoneNumber: string) => {
+    // Bangladesh phone numbers should start with +880 and be followed by 10 digits
+    const regex = /^\+880\d{10}$/;
+    return regex.test(phoneNumber);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setPhoneError('');
 
     // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate phone number
+    if (!validateBangladeshPhone(phone)) {
+      setPhoneError('Please enter a valid Bangladesh phone number (+8801XXXXXXXXX)');
       setIsLoading(false);
       return;
     }
@@ -42,6 +59,7 @@ export default function SignUp() {
         body: JSON.stringify({
           name,
           email,
+          phone,
           password,
         }),
       });
@@ -115,6 +133,23 @@ export default function SignUp() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number (Bangladesh)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+8801770000000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+              {phoneError && (
+                <p className="text-sm text-destructive">{phoneError}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Format: +8801XXXXXXXXX (Bangladesh number)
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

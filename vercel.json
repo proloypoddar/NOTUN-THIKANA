@@ -2,16 +2,26 @@
   "version": 2,
   "framework": "nextjs",
   "public": true,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
   "env": {
     "MONGODB_URI": "mongodb+srv://polokpoddar:R7THOg45tgCcOxle@cluster0.kvtm9t5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-    "NEXTAUTH_SECRET": "your-secret-key-for-jwt-signing",
-    "NEXTAUTH_URL": "https://project-660ipemrg-proloypoddars-projects.vercel.app",
+    "NEXTAUTH_URL": "${VERCEL_URL}",
+    "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET}",
     "PUSHER_APP_ID": "1731066",
     "PUSHER_KEY": "e0004f4f8d3d3e9d8ecc",
     "PUSHER_SECRET": "a6c8b5d6d2c3c3c3c3c3",
-    "PUSHER_CLUSTER": "ap2",
-    "GOOGLE_CLIENT_ID": "your-google-client-id",
-    "GOOGLE_CLIENT_SECRET": "your-google-client-secret"
+    "PUSHER_CLUSTER": "ap2"
   },
   "headers": [
     {

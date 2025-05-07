@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { Send, Search, MoreVertical, Phone, Video, Info } from 'lucide-react';
+import { Send, Search, MoreVertical, Phone, Video, Info, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useSocket, Message as SocketMessage } from '@/lib/hooks/useSocket';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 // Types for our messages
 interface User {
@@ -233,7 +235,12 @@ function MessagesPage() {
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isNewChatOpen, setIsNewChatOpen] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize socket connection
+  const { socket, isConnected, sendMessage, markAsRead, onlineUsers } = useSocket();
 
   // Create a default user for unauthenticated sessions
   useEffect(() => {
@@ -241,16 +248,27 @@ function MessagesPage() {
     console.log('User status:', status);
   }, [status]);
 
-  // Load conversations - using mock data for now for better performance
+  // Load conversations from the database
   useEffect(() => {
     const loadConversations = async () => {
       setLoading(true);
       try {
-        // Using mock data directly for better performance
-        setTimeout(() => {
+        if (session?.user?.id) {
+          // Fetch real conversations from the API
+          const response = await fetch(`/api/messages`);
+
+          if (response.ok) {
+            const data = await response.json();
+            setConversations(data.conversations || []);
+          } else {
+            // Fallback to mock data if API fails
+            console.warn('Failed to fetch conversations, using mock data');
+            setConversations(mockConversations);
+          }
+        } else {
+          // Use mock data for unauthenticated users
           setConversations(mockConversations);
-          setLoading(false);
-        }, 300);
+        }
       } catch (error) {
         console.error('Error loading conversations:', error);
         toast({
@@ -259,35 +277,50 @@ function MessagesPage() {
           variant: 'destructive',
         });
         setConversations(mockConversations);
+      } finally {
         setLoading(false);
       }
     };
 
-    // Load conversations regardless of authentication status
     loadConversations();
-  }, [toast]);
+  }, [session, toast]);
 
-  // Load messages for active conversation - using mock data for better performance
+  // Load messages for active conversation from the database
   useEffect(() => {
-    if (!activeConversation) return;
+    if (!activeConversation || !session?.user?.id) return;
 
     const loadMessages = async () => {
       try {
-        // Using mock data directly for better performance
-        setTimeout(() => {
+        // Fetch real messages from the API
+        const response = await fetch(`/api/messages?conversationId=${activeConversation}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          setMessages(data.messages || []);
+        } else {
+          // Fallback to mock data if API fails
+          console.warn('Failed to fetch messages, using mock data');
           // @ts-ignore - This is mock data
           const conversationMessages = mockMessages[activeConversation] || [];
           setMessages(conversationMessages);
+        }
 
-          // Mark conversation as read
-          setConversations(prev =>
-            prev.map(conv =>
-              conv.id === activeConversation
-                ? { ...conv, unread: 0 }
-                : conv
-            )
-          );
-        }, 200);
+        // Mark conversation as read
+        setConversations(prev =>
+          prev.map(conv =>
+            conv.id === activeConversation
+              ? { ...conv, unread: 0 }
+              : conv
+          )
+        );
+
+        // Mark messages as read via socket
+        if (isConnected && activeConversationDetails) {
+          // Mark all unread messages as read
+          messages
+            .filter(msg => msg.sender !== 'currentUser' && !msg.read)
+            .forEach(msg => markAsRead(msg.id));
+        }
       } catch (error) {
         console.error('Error loading messages:', error);
         toast({
@@ -304,12 +337,94 @@ function MessagesPage() {
     };
 
     loadMessages();
-  }, [activeConversation, toast]);
+  }, [activeConversation, session, toast, isConnected, activeConversationDetails, markAsRead]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Listen for new messages from socket
+  useEffect(() => {
+    if (!socket || !session?.user?.id) return;
+
+    // Handle new messages
+    const handleNewMessage = (message: SocketMessage) => {
+      // Check if this message belongs to the active conversation
+      const isActiveConversation =
+        activeConversation &&
+        (message.sender.id === activeConversationDetails?.user.id ||
+         message.sender.id === session.user.id);
+
+      if (isActiveConversation) {
+        // Add message to current conversation
+        setMessages(prev => [
+          ...prev,
+          {
+            id: message.id,
+            sender: message.sender.id === session.user.id ? 'currentUser' : message.sender.id,
+            content: message.content,
+            timestamp: message.timestamp,
+          }
+        ]);
+
+        // Mark as read if it's not from current user
+        if (message.sender.id !== session.user.id) {
+          markAsRead(message.id);
+        }
+      }
+
+      // Update conversations list with new message
+      setConversations(prev => {
+        const conversationIndex = prev.findIndex(
+          c => c.user.id === message.sender.id ||
+               (message.sender.id === session.user.id && c.id === activeConversation)
+        );
+
+        if (conversationIndex >= 0) {
+          // Update existing conversation
+          const updatedConversations = [...prev];
+          updatedConversations[conversationIndex] = {
+            ...updatedConversations[conversationIndex],
+            lastMessage: {
+              content: message.content,
+              timestamp: message.timestamp,
+            },
+            unread: isActiveConversation ? 0 : updatedConversations[conversationIndex].unread + 1,
+          };
+          return updatedConversations;
+        } else if (message.sender.id !== session.user.id) {
+          // Create new conversation for new sender
+          return [
+            {
+              id: `new-${Date.now()}`,
+              user: {
+                id: message.sender.id,
+                name: message.sender.name,
+                image: message.sender.image,
+              },
+              lastMessage: {
+                content: message.content,
+                timestamp: message.timestamp,
+              },
+              unread: 1,
+            },
+            ...prev,
+          ];
+        }
+
+        return prev;
+      });
+    };
+
+    // Register socket event listeners
+    socket.on('new_message', handleNewMessage);
+
+    // Clean up
+    return () => {
+      socket.off('new_message', handleNewMessage);
+    };
+  }, [socket, session, activeConversation, activeConversationDetails, markAsRead]);
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv =>
@@ -319,12 +434,12 @@ function MessagesPage() {
   // Get active conversation details
   const activeConversationDetails = conversations.find(conv => conv.id === activeConversation);
 
-  // Handle sending a new message - simplified for better performance
+  // Handle sending a new message using Socket.io
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConversation || !activeConversationDetails) return;
+    if (!newMessage.trim() || !activeConversation || !activeConversationDetails || !session?.user?.id) return;
 
-    // Create a new message
+    // Create a temporary message for immediate display
     const tempId = `new-${Date.now()}`;
     const newMsg = {
       id: tempId,
@@ -354,13 +469,23 @@ function MessagesPage() {
     // Clear input
     setNewMessage('');
 
-    // Simulate API call success with a toast notification
-    setTimeout(() => {
+    // Send message via Socket.io
+    if (isConnected) {
+      sendMessage(activeConversationDetails.user.id, newMessage);
+
+      // Show success notification
       toast({
         title: 'Message Sent',
         description: 'Your message has been sent successfully.',
       });
-    }, 500);
+    } else {
+      // Show error notification if socket is not connected
+      toast({
+        title: 'Connection Error',
+        description: 'Unable to send message. Please check your connection.',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Format timestamp
@@ -422,14 +547,19 @@ function MessagesPage() {
         {/* Conversations List */}
         <div className="w-1/3 border-r">
           <div className="p-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search conversations..."
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search conversations..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button size="icon" onClick={() => setIsNewChatOpen(true)} title="New conversation">
+                <UserPlus className="h-4 w-4" />
+              </Button>
             </div>
           </div>
           <Separator />
@@ -590,6 +720,76 @@ function MessagesPage() {
           )}
         </div>
       </div>
+
+      {/* New Conversation Dialog */}
+      <Dialog open={isNewChatOpen} onOpenChange={setIsNewChatOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>New Conversation</DialogTitle>
+            <DialogDescription>
+              Select a user to start a new conversation.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="relative mb-4">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search users..."
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="max-h-[300px] overflow-y-auto">
+            {/* Mock users for demo - in a real app, these would come from the API */}
+            {[
+              { id: 'user1', name: 'Sarah Johnson', image: 'https://randomuser.me/api/portraits/women/44.jpg' },
+              { id: 'user2', name: 'Michael Chen', image: 'https://randomuser.me/api/portraits/men/32.jpg' },
+              { id: 'user3', name: 'Aisha Patel', image: 'https://randomuser.me/api/portraits/women/68.jpg' },
+              { id: 'user4', name: 'David Wilson', image: 'https://randomuser.me/api/portraits/men/75.jpg' },
+              { id: 'user5', name: 'Elena Rodriguez', image: 'https://randomuser.me/api/portraits/women/90.jpg' },
+            ]
+              .filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map(user => (
+                <button
+                  key={user.id}
+                  className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-accent"
+                  onClick={() => {
+                    // Create a new conversation
+                    const newConvId = `new-${Date.now()}`;
+                    const newConversation = {
+                      id: newConvId,
+                      user: {
+                        id: user.id,
+                        name: user.name,
+                        image: user.image,
+                      },
+                      lastMessage: {
+                        content: 'Start a new conversation',
+                        timestamp: new Date().toISOString(),
+                      },
+                      unread: 0,
+                    };
+
+                    setConversations(prev => [newConversation, ...prev]);
+                    setActiveConversation(newConvId);
+                    setIsNewChatOpen(false);
+                    setSearchQuery('');
+                  }}
+                >
+                  <Avatar>
+                    <AvatarImage src={user.image} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium">{user.name}</p>
+                  </div>
+                </button>
+              ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -2,7 +2,9 @@ import NextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { authenticateUser, findUserByEmail, createUser, UserRole } from '@/database';
+import dbConnect from '@/lib/db/connect';
+import { User } from '@/lib/db/models/User';
+import bcrypt from 'bcryptjs';
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -22,17 +24,32 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          // Authenticate user with email and password
-          const user = authenticateUser(credentials.email, credentials.password);
+          // Connect to the database
+          await dbConnect();
+
+          // Find the user by email
+          const user = await User.findOne({ email: credentials.email }).select('+password');
 
           if (!user) {
-            console.log('Authentication failed for:', credentials.email);
+            console.log('User not found:', credentials.email);
+            return null;
+          }
+
+          // Verify password
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+          if (!isPasswordValid) {
+            console.log('Invalid password for:', credentials.email);
             return null;
           }
 
           console.log('User authenticated successfully:', user.email);
+
+          // Update last active timestamp
+          await User.findByIdAndUpdate(user._id, { lastActive: new Date() });
+
           return {
-            id: user.id,
+            id: user._id.toString(),
             name: user.name,
             email: user.email,
             role: user.role,
@@ -49,19 +66,30 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
+          await dbConnect();
+
           // Check if user exists
-          const existingUser = findUserByEmail(user.email);
+          const existingUser = await User.findOne({ email: user.email });
 
           if (!existingUser) {
+            // Generate a random password for Google users
+            const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
             // Create a new user for Google sign-in
-            createUser(
-              user.name || 'Google User',
-              user.email,
-              // Generate a random password for Google users
-              Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8),
-              UserRole.USER
-            );
+            await User.create({
+              name: user.name || 'Google User',
+              email: user.email,
+              password: hashedPassword,
+              role: 'user',
+              image: user.image,
+              verified: true,
+            });
+
             console.log(`Created new user from Google sign-in: ${user.email}`);
+          } else {
+            // Update last active timestamp
+            await User.findByIdAndUpdate(existingUser._id, { lastActive: new Date() });
           }
         } catch (error) {
           console.error("Error during sign in:", error);
@@ -73,18 +101,20 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session?.user) {
         try {
+          await dbConnect();
+
           // Get user from database
-          const dbUser = findUserByEmail(session.user.email);
+          const dbUser = await User.findOne({ email: session.user.email });
 
           if (dbUser) {
             // Add user data to session
-            session.user.id = dbUser.id;
+            session.user.id = dbUser._id.toString();
             session.user.role = dbUser.role;
             session.user.image = dbUser.image;
 
             // Add custom properties
-            (session.user as any).status = dbUser.status;
-            (session.user as any).lastLogin = dbUser.lastLogin;
+            (session.user as any).verified = dbUser.verified;
+            (session.user as any).lastActive = dbUser.lastActive;
           }
         } catch (error) {
           console.error("Error getting session:", error);

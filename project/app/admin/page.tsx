@@ -4,28 +4,44 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { 
-  Users, 
-  MessageSquare, 
-  Calendar, 
-  Home, 
-  Shield, 
-  Search, 
-  RefreshCw, 
-  CheckCircle, 
+import {
+  Users,
+  MessageSquare,
+  Calendar,
+  Home,
+  Shield,
+  Search,
+  RefreshCw,
+  CheckCircle,
   XCircle,
   BarChart3,
   PieChart,
   Activity,
-  TrendingUp
+  TrendingUp,
+  Save
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Mock data for demonstration
 const mockUsers = [
@@ -66,6 +82,22 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState(mockUsers);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [stats, setStats] = useState({
+    counts: {
+      users: 0,
+      posts: 0,
+      messages: 0,
+    },
+    userDistribution: {},
+    recentActivity: {
+      users: [],
+      posts: [],
+    }
+  });
 
   // Check if user is admin
   useEffect(() => {
@@ -77,26 +109,84 @@ export default function AdminDashboard() {
           variant: 'destructive',
         });
         router.push('/');
+      } else {
+        // Load users data and stats
+        fetchUsers();
+        fetchStats();
       }
     } else if (status === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/admin');
     }
   }, [status, session, router, toast]);
 
+  // Fetch users from the API
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/admin/users');
+
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+      } else {
+        console.error('Failed to fetch users');
+        toast({
+          title: 'Error',
+          description: 'Failed to load users. Using mock data instead.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load users. Using mock data instead.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch dashboard statistics
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/admin/stats');
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      } else {
+        console.error('Failed to fetch stats');
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   const handleSeedDatabase = async () => {
     setIsLoading(true);
     try {
       const response = await fetch('/api/seed');
       const data = await response.json();
-      toast({
-        title: 'Database Seeded',
-        description: data.message,
-      });
+
+      if (response.ok) {
+        toast({
+          title: 'Database Seeded',
+          description: `${data.message} - Created ${data.counts?.users || 0} users, ${data.counts?.posts || 0} posts, and ${data.counts?.messages || 0} messages.`,
+        });
+
+        // Refresh data
+        fetchUsers();
+        fetchStats();
+      } else {
+        throw new Error(data.message || 'Failed to seed database');
+      }
     } catch (error) {
       console.error('Error seeding database:', error);
       toast({
         title: 'Error',
-        description: 'Failed to seed database. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to seed database. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -123,6 +213,84 @@ export default function AdminDashboard() {
       title: 'Post Removed',
       description: `Post ID: ${id} has been removed.`,
     });
+  };
+
+  // Handle updating a user
+  const handleUpdateUser = async (userData: any) => {
+    setIsLoading(true);
+    try {
+      console.log('Updating user with data:', userData);
+
+      const response = await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: userData.id,
+          role: userData.role,
+          status: userData.status
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('User update response:', data);
+
+        // Update the user in the local state
+        setUsers(prev =>
+          prev.map(user =>
+            user.id === userData.id
+              ? {
+                  ...user,
+                  role: userData.role || user.role,
+                  status: userData.status || user.status
+                }
+              : user
+          )
+        );
+
+        toast({
+          title: 'User Updated',
+          description: data.message,
+        });
+
+        // Create a notification for the user
+        try {
+          await fetch('/api/notifications', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              recipient: userData.id,
+              notification: {
+                title: 'Account Updated',
+                message: `Your account has been updated by an administrator. Role: ${userData.role}, Status: ${userData.status}`,
+                type: 'system',
+                urgency: 'regular',
+              }
+            }),
+          });
+        } catch (notifError) {
+          console.error('Error sending notification:', notifError);
+        }
+
+        setIsEditUserDialogOpen(false);
+      } else {
+        throw new Error(data.message || 'Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to update user',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (status === 'loading' || (status === 'authenticated' && session?.user.role !== 'admin')) {
@@ -161,8 +329,8 @@ export default function AdminDashboard() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">5,231</div>
-                <p className="text-xs text-muted-foreground">+12% from last month</p>
+                <div className="text-2xl font-bold">{stats.counts.users || 0}</div>
+                <p className="text-xs text-muted-foreground">Total registered users</p>
               </CardContent>
             </Card>
             <Card>
@@ -171,8 +339,8 @@ export default function AdminDashboard() {
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,423</div>
-                <p className="text-xs text-muted-foreground">+8% from last month</p>
+                <div className="text-2xl font-bold">{stats.counts.posts || 0}</div>
+                <p className="text-xs text-muted-foreground">Total posts created</p>
               </CardContent>
             </Card>
             <Card>
@@ -181,8 +349,8 @@ export default function AdminDashboard() {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">42</div>
-                <p className="text-xs text-muted-foreground">+18% from last month</p>
+                <div className="text-2xl font-bold">5</div>
+                <p className="text-xs text-muted-foreground">Scheduled events</p>
               </CardContent>
             </Card>
             <Card>
@@ -191,8 +359,8 @@ export default function AdminDashboard() {
                 <Home className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">863</div>
-                <p className="text-xs text-muted-foreground">+4% from last month</p>
+                <div className="text-2xl font-bold">{stats.counts.messages || 0}</div>
+                <p className="text-xs text-muted-foreground">Total messages sent</p>
               </CardContent>
             </Card>
           </div>
@@ -234,42 +402,33 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <Users className="h-4 w-4 text-primary" />
+                  {stats.recentActivity?.users?.slice(0, 2).map((user: any, index: number) => (
+                    <div key={user.id || index} className="flex items-center gap-4">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <Users className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">New user registered</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.name} - {new Date(user.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">New user registered</p>
-                      <p className="text-xs text-muted-foreground">Elena Rodriguez - 2 hours ago</p>
+                  ))}
+
+                  {stats.recentActivity?.posts?.slice(0, 2).map((post: any, index: number) => (
+                    <div key={post.id || index} className="flex items-center gap-4">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">New post created</p>
+                        <p className="text-xs text-muted-foreground">
+                          {post.title} - {post.author}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <MessageSquare className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">New forum post created</p>
-                      <p className="text-xs text-muted-foreground">Michael Chen - 3 hours ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <Calendar className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">New event scheduled</p>
-                      <p className="text-xs text-muted-foreground">Sarah Johnson - 5 hours ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <Home className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">New property listed</p>
-                      <p className="text-xs text-muted-foreground">John Doe - 8 hours ago</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -335,10 +494,20 @@ export default function AdminDashboard() {
               <div className="mb-4 flex items-center gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search users..." className="pl-8" />
+                  <Input
+                    placeholder="Search users..."
+                    className="pl-8"
+                    value={userSearchQuery}
+                    onChange={(e) => setUserSearchQuery(e.target.value)}
+                  />
                 </div>
-                <Button variant="outline" size="sm">
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchUsers}
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                   Refresh
                 </Button>
               </div>
@@ -355,26 +524,40 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockUsers.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'landlord' ? 'outline' : 'secondary'}>
-                            {user.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
-                            {user.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{user.joined}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {users
+                      .filter(user =>
+                        user.name.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+                        user.email.toLowerCase().includes(userSearchQuery.toLowerCase())
+                      )
+                      .map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'landlord' ? 'outline' : 'secondary'}>
+                              {user.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                              {user.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{user.joined}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setIsEditUserDialogOpen(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </div>
@@ -429,9 +612,9 @@ export default function AdminDashboard() {
                         <TableCell>{post.date}</TableCell>
                         <TableCell>{post.reports}</TableCell>
                         <TableCell className="text-right">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="text-destructive"
                             onClick={() => handleRemovePost(post.id)}
                           >
@@ -533,8 +716,8 @@ export default function AdminDashboard() {
                         <TableCell className="text-right">
                           {property.status === 'pending' ? (
                             <div className="flex justify-end gap-2">
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
                                 className="text-green-600"
                                 onClick={() => handleApproveProperty(property.id)}
@@ -542,8 +725,8 @@ export default function AdminDashboard() {
                                 <CheckCircle className="mr-1 h-4 w-4" />
                                 Approve
                               </Button>
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
                                 className="text-destructive"
                                 onClick={() => handleRejectProperty(property.id)}
@@ -594,6 +777,100 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditUserDialogOpen} onOpenChange={setIsEditUserDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+            <DialogDescription>
+              Update user role and status.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  value={selectedUser.name}
+                  className="col-span-3"
+                  disabled
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  value={selectedUser.email}
+                  className="col-span-3"
+                  disabled
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="role" className="text-right">
+                  Role
+                </Label>
+                <Select
+                  value={selectedUser.role}
+                  onValueChange={(value) => setSelectedUser({...selectedUser, role: value})}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="landlord">Landlord</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select
+                  value={selectedUser.status}
+                  onValueChange={(value) => setSelectedUser({...selectedUser, status: value})}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              type="submit"
+              onClick={() => handleUpdateUser(selectedUser)}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save changes
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

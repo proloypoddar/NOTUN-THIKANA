@@ -7,7 +7,7 @@ import { Heart } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface BlogCardProps {
   _id: string;
@@ -22,14 +22,14 @@ interface BlogCardProps {
   likes: number;
 }
 
-const BlogCard: React.FC<BlogCardProps> = ({ 
-  _id, 
-  image, 
-  title, 
-  category, 
-  excerpt, 
-  author, 
-  likes 
+const BlogCard: React.FC<BlogCardProps> = ({
+  _id,
+  image,
+  title,
+  category,
+  excerpt,
+  author,
+  likes
 }) => {
   const [likeCount, setLikeCount] = useState<number>(likes);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -106,9 +106,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
         </div>
       </CardContent>
       <CardFooter className="border-t pt-4 flex justify-between">
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleLike}
           className="flex items-center gap-1"
         >

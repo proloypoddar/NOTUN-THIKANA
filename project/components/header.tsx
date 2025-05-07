@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { MoonIcon, SunIcon, Menu, Home, Calendar, MessageSquare, Building2, User, LogOut, Mail, Zap, Shield } from 'lucide-react';
+import { MoonIcon, SunIcon, Menu, Home, Calendar, MessageSquare, Building2, User, LogOut, Mail, Zap, Shield, UserPlus } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import NotificationIcon from '@/components/notification/NotificationIcon';
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import {
   Sheet,
   SheetContent,
@@ -35,6 +35,7 @@ export default function Header() {
     { name: 'Services', href: '/services', icon: Zap },
     { name: 'Blogs', href: '/blogs', icon: Calendar },
     { name: 'Messages', href: '/messages', icon: Mail },
+    { name: 'Friends', href: '/friends', icon: UserPlus },
   ];
 
   return (
@@ -100,7 +101,7 @@ export default function Header() {
         </Button>
 
         <div className="mr-4">
-          <NotificationIcon />
+          <NotificationDropdown />
         </div>
 
         <div className="flex items-center gap-2">

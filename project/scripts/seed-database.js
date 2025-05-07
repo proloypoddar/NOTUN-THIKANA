@@ -1,12 +1,56 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import dbConnect from '@/lib/db/connect';
-import { User } from '@/lib/db/models/User';
-import { Post } from '@/lib/db/models/Post';
-import { Message } from '@/lib/db/models/Message';
+/**
+ * Database Seeding Script
+ * 
+ * This script seeds the MongoDB database with initial data.
+ * Run with: node scripts/seed-database.js
+ */
+
+require('dotenv').config();
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+// MongoDB connection string
+const MONGODB_URI = 'mongodb+srv://polokpoddar:R7THOg45tgCcOxle@cluster0.kvtm9t5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+// Define schemas
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  image: String,
+  role: { type: String, enum: ['user', 'landlord', 'admin'], default: 'user' },
+  verified: { type: Boolean, default: false },
+  phone: String,
+  nid: String,
+  createdAt: { type: Date, default: Date.now },
+  lastActive: { type: Date, default: Date.now }
+});
+
+const MessageSchema = new mongoose.Schema({
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  content: { type: String, required: true },
+  read: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const PostSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  isAnonymous: { type: Boolean, default: false },
+  category: { type: String, required: true },
+  tags: [String],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  views: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+// Create models
+const User = mongoose.model('User', UserSchema);
+const Message = mongoose.model('Message', MessageSchema);
+const Post = mongoose.model('Post', PostSchema);
 
 // Sample data
 const users = [
@@ -85,26 +129,19 @@ const posts = [
   }
 ];
 
-export async function GET() {
+// Connect to MongoDB and seed data
+async function seedDatabase() {
   try {
-    // Check if user is authenticated and is an admin
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Connect to the database
-    await dbConnect();
-
+    // Connect to MongoDB
+    await mongoose.connect(MONGODB_URI);
+    console.log('Connected to MongoDB successfully!');
+    
     // Clear existing data
     await User.deleteMany({});
-    await Post.deleteMany({});
     await Message.deleteMany({});
-
+    await Post.deleteMany({});
+    console.log('Cleared existing data');
+    
     // Hash passwords for users
     const hashedUsers = await Promise.all(
       users.map(async (user) => ({
@@ -112,19 +149,21 @@ export async function GET() {
         password: await bcrypt.hash(user.password, 10)
       }))
     );
-
+    
     // Insert users
     const createdUsers = await User.insertMany(hashedUsers);
-
+    console.log(`Created ${createdUsers.length} users`);
+    
     // Create posts with user references
     const postsWithAuthors = posts.map((post, index) => ({
       ...post,
       author: createdUsers[index % createdUsers.length]._id
     }));
-
+    
     // Insert posts
     const createdPosts = await Post.insertMany(postsWithAuthors);
-
+    console.log(`Created ${createdPosts.length} posts`);
+    
     // Create some messages between users
     const messages = [
       {
@@ -158,23 +197,20 @@ export async function GET() {
         read: false,
       }
     ];
-
+    
     // Insert messages
     const createdMessages = await Message.insertMany(messages);
-
-    return NextResponse.json({
-      message: 'Database seeded successfully',
-      counts: {
-        users: createdUsers.length,
-        posts: createdPosts.length,
-        messages: createdMessages.length
-      }
-    }, { status: 200 });
+    console.log(`Created ${createdMessages.length} messages`);
+    
+    console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);
-    return NextResponse.json({
-      message: 'Error seeding database',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+  } finally {
+    // Close the MongoDB connection
+    await mongoose.connection.close();
+    console.log('MongoDB connection closed');
   }
 }
+
+// Run the seeding function
+seedDatabase();
