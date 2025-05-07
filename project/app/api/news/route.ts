@@ -28,7 +28,7 @@ export async function GET() {
 
     // Combine all news
     let allNews = [];
-    
+
     newsResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         allNews = [...allNews, ...result.value.map(item => ({
@@ -102,7 +102,7 @@ async function fetchProthomAloNews() {
     },
     {
       id: 'pa2',
-      title: 'Bangladesh's garment exports see 12% growth',
+      title: 'Bangladesh\'s garment exports see 12% growth',
       summary: 'Bangladesh\'s ready-made garment exports have seen a 12% year-on-year growth in the first quarter of 2023.',
       image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
       url: 'https://www.prothomalo.com/business/bangladeshs-garment-exports-see-12-growth',
@@ -136,7 +136,7 @@ async function fetchDhakaTribuneNews() {
     },
     {
       id: 'dt2',
-      title: 'Bangladesh's renewable energy capacity to double by 2025',
+      title: 'Bangladesh\'s renewable energy capacity to double by 2025',
       summary: 'Government plans to double the country\'s renewable energy capacity within the next two years.',
       image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
       url: 'https://www.dhakatribune.com/business/2023/bangladeshs-renewable-energy-capacity-to-double-by-2025',
@@ -145,7 +145,7 @@ async function fetchDhakaTribuneNews() {
     },
     {
       id: 'dt3',
-      title: 'Bangladesh's startup ecosystem attracts record investment',
+      title: 'Bangladesh\'s startup ecosystem attracts record investment',
       summary: 'Bangladeshi startups have attracted a record $200 million in investments in the first half of 2023.',
       image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
       url: 'https://www.dhakatribune.com/business/2023/bangladeshs-startup-ecosystem-attracts-record-investment',
