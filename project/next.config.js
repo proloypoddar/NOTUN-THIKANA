@@ -21,7 +21,7 @@ const nextConfig = {
   },
   // Configure images for Vercel deployment
   images: {
-    domains: ['randomuser.me', 'images.unsplash.com'],
+    domains: ['randomuser.me', 'images.unsplash.com', 'avatars.githubusercontent.com'],
     remotePatterns: [
       {
         protocol: 'https',
