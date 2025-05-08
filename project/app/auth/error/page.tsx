@@ -9,12 +9,11 @@ import { AlertCircle } from 'lucide-react';
 
 export default function AuthError() {
   const searchParams = useSearchParams();
-<<<<<<< HEAD
   const [errorMessage, setErrorMessage] = useState('An unknown error occurred');
 
   useEffect(() => {
     const error = searchParams.get('error');
-    
+
     if (error) {
       switch (error) {
         case 'CredentialsSignin':
@@ -39,56 +38,12 @@ export default function AuthError() {
         default:
           setErrorMessage(`Authentication error: ${error}`);
       }
-=======
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    const errorParam = searchParams.get('error');
-    
-    if (errorParam === 'CredentialsSignin') {
-      setError('Invalid email or password. Please try again.');
-    } else if (errorParam === 'OAuthAccountNotLinked') {
-      setError('Email already in use with a different provider.');
-    } else if (errorParam === 'OAuthSignin') {
-      setError('Error signing in with OAuth provider.');
-    } else if (errorParam === 'OAuthCallback') {
-      setError('Error during OAuth callback.');
-    } else if (errorParam === 'AccessDenied') {
-      setError('Access denied. You do not have permission to sign in.');
-    } else if (errorParam === 'Verification') {
-      setError('The token has expired or is invalid.');
-    } else {
-      setError('An unknown error occurred during authentication.');
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
     }
   }, [searchParams]);
 
   return (
     <div className="container flex h-screen items-center justify-center">
       <Card className="mx-auto w-full max-w-md">
-<<<<<<< HEAD
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center">
-            <AlertCircle className="h-12 w-12 text-destructive" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Authentication Error</CardTitle>
-          <CardDescription>
-            There was a problem with your authentication
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md bg-destructive/15 p-4 text-center text-destructive">
-            {errorMessage}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center gap-4">
-          <Button asChild>
-            <Link href="/auth/signin">Try Again</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/">Go Home</Link>
-          </Button>
-=======
         <CardHeader className="space-y-1">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-6 w-6 text-destructive" />
@@ -99,7 +54,7 @@ export default function AuthError() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm text-muted-foreground">{errorMessage}</p>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" asChild>
@@ -108,7 +63,6 @@ export default function AuthError() {
           <Button asChild>
             <Link href="/auth/signin">Try Again</Link>
           </Button>
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
         </CardFooter>
       </Card>
     </div>

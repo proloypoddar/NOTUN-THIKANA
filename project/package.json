@@ -14,9 +14,7 @@
     "seed:blogs": "node scripts/seed-blogs.js",
     "seed:notifications": "node scripts/seed-notifications.js",
     "seed:users": "node scripts/seed-users.js",
-    "seed:all": "npm run seed:users && npm run seed:blogs && npm run seed:notifications",
-    "deploy:check": "node scripts/deploy-vercel.js",
-    "deploy": "npm run deploy:check && vercel"
+    "seed:all": "npm run seed:users && npm run seed:blogs && npm run seed:notifications"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -60,6 +58,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.3.0",
+    "encoding": "^0.1.13",
     "eslint": "8.49.0",
     "eslint-config-next": "13.5.1",
     "framer-motion": "^12.8.0",
