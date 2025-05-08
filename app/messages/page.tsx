@@ -315,11 +315,14 @@ function MessagesPage() {
         );
 
         // Mark messages as read via socket
-        if (isConnected && activeConversationDetails) {
-          // Mark all unread messages as read
-          messages
-            .filter(msg => msg.sender !== 'currentUser' && !msg.read)
-            .forEach(msg => markAsRead(msg.id));
+        if (isConnected) {
+          const conversationDetails = conversations.find(conv => conv.id === activeConversation);
+          if (conversationDetails) {
+            // Mark all unread messages as read
+            messages
+              .filter(msg => msg.sender !== 'currentUser' && !msg.read)
+              .forEach(msg => markAsRead(msg.id));
+          }
         }
       } catch (error) {
         console.error('Error loading messages:', error);
@@ -337,7 +340,7 @@ function MessagesPage() {
     };
 
     loadMessages();
-  }, [activeConversation, session, toast, isConnected, activeConversationDetails, markAsRead]);
+  }, [activeConversation, session, toast, isConnected, conversations, messages, markAsRead]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -351,9 +354,13 @@ function MessagesPage() {
     // Handle new messages
     const handleNewMessage = (message: SocketMessage) => {
       // Check if this message belongs to the active conversation
+      const currentConversationDetails = activeConversation ?
+        conversations.find(conv => conv.id === activeConversation) : null;
+
       const isActiveConversation =
         activeConversation &&
-        (message.sender.id === activeConversationDetails?.user.id ||
+        currentConversationDetails &&
+        (message.sender.id === currentConversationDetails.user.id ||
          message.sender.id === session.user.id);
 
       if (isActiveConversation) {
@@ -424,7 +431,7 @@ function MessagesPage() {
     return () => {
       socket.off('new_message', handleNewMessage);
     };
-  }, [socket, session, activeConversation, activeConversationDetails, markAsRead]);
+  }, [socket, session, activeConversation, conversations, markAsRead]);
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv =>
@@ -432,7 +439,7 @@ function MessagesPage() {
   );
 
   // Get active conversation details
-  const activeConversationDetails = conversations.find(conv => conv.id === activeConversation);
+  const activeConversationDetails = activeConversation ? conversations.find(conv => conv.id === activeConversation) : null;
 
   // Handle sending a new message using Socket.io
   const handleSendMessage = async (e: React.FormEvent) => {

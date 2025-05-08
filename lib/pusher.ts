@@ -23,6 +23,7 @@ export const CHANNELS = {
   MESSAGES: 'messages',
   NOTIFICATIONS: 'notifications',
   FRIEND_REQUESTS: 'friend-requests',
+  FRIENDS: 'friends',
 };
 
 export const EVENTS = {
@@ -31,4 +32,5 @@ export const EVENTS = {
   NEW_NOTIFICATION: 'new-notification',
   FRIEND_REQUEST: 'friend-request',
   FRIEND_REQUEST_ACCEPTED: 'friend-request-accepted',
+  FRIEND_ADDED: 'friend-added',
 };

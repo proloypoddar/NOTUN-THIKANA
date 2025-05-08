@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notun Thikana Test Users</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2563eb;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .user-card {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+        .user-card h2 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .user-info {
+            margin-bottom: 15px;
+        }
+        .user-info p {
+            margin: 5px 0;
+        }
+        .user-info strong {
+            display: inline-block;
+            width: 100px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+        .btn-secondary {
+            background-color: #4b5563;
+        }
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        .note {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notun Thikana Test Users</h1>
+    
+    <div class="note">
+        <p><strong>Note:</strong> These links provide direct access to test user accounts. Use them to test multi-user functionality in the application.</p>
+    </div>
+    
+    <div class="user-card">
+        <h2>Test User 1 (Regular User)</h2>
+        <div class="user-info">
+            <p><strong>Email:</strong> user1@example.com</p>
+            <p><strong>Password:</strong> password123</p>
+            <p><strong>Role:</strong> User</p>
+        </div>
+        <a href="http://localhost:3000/api/auth/callback/credentials?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCBVc2VyIDEiLCJlbWFpbCI6InVzZXIxQGV4YW1wbGUuY29tIiwiaWQiOiI2ODFjNmM0OGI5MmFlMDI5YjUzNmI5OTciLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjY5MzMzMywiZXhwIjoxNzQ3Mjk4MTMzfQ.jEm9Gn7Z0f7hmg3qszUTkoIqmEBYJiBtXxWfrsHIFMI" class="btn" target="_blank">Login as User 1 (Local)</a>
+        <a href="https://notun-thikana.vercel.app/api/auth/callback/credentials?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCBVc2VyIDEiLCJlbWFpbCI6InVzZXIxQGV4YW1wbGUuY29tIiwiaWQiOiI2ODFjNmM0OGI5MmFlMDI5YjUzNmI5OTciLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjY5MzMzMywiZXhwIjoxNzQ3Mjk4MTMzfQ.jEm9Gn7Z0f7hmg3qszUTkoIqmEBYJiBtXxWfrsHIFMI" class="btn btn-secondary" target="_blank">Login as User 1 (Vercel)</a>
+    </div>
+    
+    <div class="user-card">
+        <h2>Test User 2 (Landlord)</h2>
+        <div class="user-info">
+            <p><strong>Email:</strong> user2@example.com</p>
+            <p><strong>Password:</strong> password123</p>
+            <p><strong>Role:</strong> Landlord</p>
+        </div>
+        <a href="http://localhost:3000/api/auth/callback/credentials?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCBVc2VyIDIiLCJlbWFpbCI6InVzZXIyQGV4YW1wbGUuY29tIiwiaWQiOiI2ODFjNmM0OGI5MmFlMDI5YjUzNmI5OWEiLCJyb2xlIjoibGFuZGxvcmQiLCJpYXQiOjE3NDY2OTMzMzMsImV4cCI6MTc0NzI5ODEzM30.DxPU_Sa3ds0w6WQ8umOVK0LJZdlk8JdL6Oe5-GWjrfQ" class="btn" target="_blank">Login as Landlord (Local)</a>
+        <a href="https://notun-thikana.vercel.app/api/auth/callback/credentials?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCBVc2VyIDIiLCJlbWFpbCI6InVzZXIyQGV4YW1wbGUuY29tIiwiaWQiOiI2ODFjNmM0OGI5MmFlMDI5YjUzNmI5OWEiLCJyb2xlIjoibGFuZGxvcmQiLCJpYXQiOjE3NDY2OTMzMzMsImV4cCI6MTc0NzI5ODEzM30.DxPU_Sa3ds0w6WQ8umOVK0LJZdlk8JdL6Oe5-GWjrfQ" class="btn btn-secondary" target="_blank">Login as Landlord (Vercel)</a>
+    </div>
+    
+    <div class="note">
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Open two different browsers or use incognito mode in one browser and regular mode in another.</li>
+            <li>In one browser, click "Login as User 1" to log in as a regular user.</li>
+            <li>In the other browser, click "Login as Landlord" to log in as a landlord.</li>
+            <li>Test messaging between the two users, friend requests, and other multi-user features.</li>
+            <li>Check the landlord leaderboard to see ratings for landlords.</li>
+        </ol>
+    </div>
+</body>
+</html>
