@@ -5,7 +5,7 @@
   "env": {
     "MONGODB_URI": "mongodb+srv://polokpoddar:R7THOg45tgCcOxle@cluster0.kvtm9t5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
     "NEXTAUTH_SECRET": "notun-thikana-secret-key-for-jwt-signing-secure",
-    "NEXTAUTH_URL": "https://notun-thikana.vercel.app",
+    "NEXTAUTH_URL": "https://notun-thikana-multi-user.vercel.app",
     "PUSHER_APP_ID": "1731066",
     "PUSHER_KEY": "e0004f4f8d3d3e9d8ecc",
     "PUSHER_SECRET": "a6c8b5d6d2c3c3c3c3c3",
