@@ -1,5 +1,6 @@
 'use client';
 
+<<<<<<< HEAD
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -43,6 +44,18 @@ interface Conversation {
   };
   unread: number;
 }
+=======
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Search, Send, Plus } from 'lucide-react';
+import ConversationList from '@/components/messaging/conversation-list';
+import MessageList from '@/components/messaging/message-list';
+import NewConversationDialog from '@/components/messaging/new-conversation-dialog';
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 
 // Mock data for conversations
 const mockConversations = [
@@ -143,6 +156,7 @@ const mockMessages = {
     {
       id: 'm5',
       sender: 'user1',
+<<<<<<< HEAD
       content: 'That sounds great! Can I bring my roommate along?',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 20).toISOString(),
     },
@@ -156,6 +170,9 @@ const mockMessages = {
       id: 'm7',
       sender: 'user1',
       content: 'Perfect! We\'ll see you there. Thanks for organizing this!',
+=======
+      content: 'Great! Should I bring anything?',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
     },
   ],
@@ -163,25 +180,41 @@ const mockMessages = {
     {
       id: 'm1',
       sender: 'user2',
+<<<<<<< HEAD
       content: 'Hi, I\'m interested in learning more about the neighborhood you mentioned in your post.',
+=======
+      content: 'Hello, I just moved to the area and saw your post about the neighborhood.',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
     },
     {
       id: 'm2',
       sender: 'currentUser',
+<<<<<<< HEAD
       content: 'Of course! It\'s a great area with lots of parks and good public transportation.',
+=======
+      content: 'Welcome to the neighborhood! How can I help?',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 47).toISOString(),
     },
     {
       id: 'm3',
       sender: 'user2',
+<<<<<<< HEAD
       content: 'That sounds perfect for me. Are there any good cafes or restaurants nearby?',
+=======
+      content: 'I was wondering if you could recommend any good local restaurants or cafes?',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 46).toISOString(),
     },
     {
       id: 'm4',
       sender: 'currentUser',
+<<<<<<< HEAD
       content: 'Yes, there are several! My favorites are Cafe Bloom for coffee and The Local Spot for dinner. Both are within walking distance.',
+=======
+      content: 'Absolutely! There\'s a great cafe called Morning Brew on Oak Street, and if you like Thai food, Thai Delight on Main Street is excellent.',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 45).toISOString(),
     },
     {
@@ -219,12 +252,17 @@ const mockMessages = {
     {
       id: 'm5',
       sender: 'user3',
+<<<<<<< HEAD
       content: 'That sounds perfect! Are you still looking for roommates?',
+=======
+      content: 'Are you still looking for roommates?',
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
     },
   ],
 };
 
+<<<<<<< HEAD
 function MessagesPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -315,11 +353,14 @@ function MessagesPage() {
         );
 
         // Mark messages as read via socket
-        if (isConnected && activeConversationDetails) {
-          // Mark all unread messages as read
-          messages
-            .filter(msg => msg.sender !== 'currentUser' && !msg.read)
-            .forEach(msg => markAsRead(msg.id));
+        if (isConnected) {
+          const conversationDetails = conversations.find(conv => conv.id === activeConversation);
+          if (conversationDetails) {
+            // Mark all unread messages as read
+            messages
+              .filter(msg => msg.sender !== 'currentUser' && !msg.read)
+              .forEach(msg => markAsRead(msg.id));
+          }
         }
       } catch (error) {
         console.error('Error loading messages:', error);
@@ -337,7 +378,7 @@ function MessagesPage() {
     };
 
     loadMessages();
-  }, [activeConversation, session, toast, isConnected, activeConversationDetails, markAsRead]);
+  }, [activeConversation, session, toast, isConnected, conversations, messages, markAsRead]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -351,9 +392,13 @@ function MessagesPage() {
     // Handle new messages
     const handleNewMessage = (message: SocketMessage) => {
       // Check if this message belongs to the active conversation
+      const currentConversationDetails = activeConversation ?
+        conversations.find(conv => conv.id === activeConversation) : null;
+
       const isActiveConversation =
         activeConversation &&
-        (message.sender.id === activeConversationDetails?.user.id ||
+        currentConversationDetails &&
+        (message.sender.id === currentConversationDetails.user.id ||
          message.sender.id === session.user.id);
 
       if (isActiveConversation) {
@@ -424,7 +469,7 @@ function MessagesPage() {
     return () => {
       socket.off('new_message', handleNewMessage);
     };
-  }, [socket, session, activeConversation, activeConversationDetails, markAsRead]);
+  }, [socket, session, activeConversation, conversations, markAsRead]);
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv =>
@@ -432,7 +477,7 @@ function MessagesPage() {
   );
 
   // Get active conversation details
-  const activeConversationDetails = conversations.find(conv => conv.id === activeConversation);
+  const activeConversationDetails = activeConversation ? conversations.find(conv => conv.id === activeConversation) : null;
 
   // Handle sending a new message using Socket.io
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -443,11 +488,34 @@ function MessagesPage() {
     const tempId = `new-${Date.now()}`;
     const newMsg = {
       id: tempId,
+=======
+export default function MessagesPage() {
+  const { data: session, status } = useSession();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [conversations, setConversations] = useState(mockConversations);
+  const [messages, setMessages] = useState<any>(mockMessages);
+  const [isNewConversationOpen, setIsNewConversationOpen] = useState(false);
+
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter(conversation =>
+    conversation.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle sending a new message
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !selectedConversation) return;
+
+    const newMessageObj = {
+      id: `m${Date.now()}`,
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
       sender: 'currentUser',
       content: newMessage,
       timestamp: new Date().toISOString(),
     };
 
+<<<<<<< HEAD
     // Add message to the conversation
     setMessages(prev => [...prev, newMsg]);
 
@@ -455,12 +523,29 @@ function MessagesPage() {
     setConversations(prev =>
       prev.map(conv =>
         conv.id === activeConversation
+=======
+    // Update messages state
+    setMessages(prev => ({
+      ...prev,
+      [selectedConversation]: [...(prev[selectedConversation] || []), newMessageObj],
+    }));
+
+    // Update last message in conversations
+    setConversations(prev =>
+      prev.map(conv =>
+        conv.id === selectedConversation
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           ? {
               ...conv,
               lastMessage: {
                 content: newMessage,
                 timestamp: new Date().toISOString(),
+<<<<<<< HEAD
               }
+=======
+              },
+              unread: 0,
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
             }
           : conv
       )
@@ -468,6 +553,7 @@ function MessagesPage() {
 
     // Clear input
     setNewMessage('');
+<<<<<<< HEAD
 
     // Send message via Socket.io
     if (isConnected) {
@@ -548,6 +634,57 @@ function MessagesPage() {
         <div className="w-1/3 border-r">
           <div className="p-4">
             <div className="flex items-center gap-2">
+=======
+  };
+
+  // Handle selecting a conversation
+  const handleSelectConversation = (conversationId: string) => {
+    setSelectedConversation(conversationId);
+    
+    // Mark conversation as read
+    setConversations(prev =>
+      prev.map(conv =>
+        conv.id === conversationId
+          ? { ...conv, unread: 0 }
+          : conv
+      )
+    );
+  };
+
+  // Handle creating a new conversation
+  const handleCreateConversation = (userId: string, userName: string, userImage: string) => {
+    const newConversationId = `new-${Date.now()}`;
+    
+    // Add new conversation to the list
+    const newConversation = {
+      id: newConversationId,
+      user: {
+        id: userId,
+        name: userName,
+        image: userImage,
+      },
+      lastMessage: {
+        content: 'Start a new conversation',
+        timestamp: new Date().toISOString(),
+      },
+      unread: 0,
+    };
+
+    setConversations(prev => [newConversation, ...prev]);
+    setSelectedConversation(newConversationId);
+    setIsNewConversationOpen(false);
+  };
+
+  return (
+    <div className="container py-6">
+      <h1 className="mb-6 text-3xl font-bold">Messages</h1>
+      
+      <div className="grid h-[calc(100vh-200px)] grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Conversations List */}
+        <Card className="md:col-span-1">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-4">
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -557,6 +694,7 @@ function MessagesPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
+<<<<<<< HEAD
               <Button size="icon" onClick={() => setIsNewChatOpen(true)} title="New conversation">
                 <UserPlus className="h-4 w-4" />
               </Button>
@@ -805,3 +943,95 @@ export default function MessagesPageWithErrorBoundary() {
     </ErrorBoundary>
   );
 }
+=======
+              <Button size="icon" onClick={() => setIsNewConversationOpen(true)}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <ConversationList
+              conversations={filteredConversations}
+              selectedId={selectedConversation}
+              onSelect={handleSelectConversation}
+            />
+          </CardContent>
+        </Card>
+        
+        {/* Message Area */}
+        <Card className="md:col-span-2">
+          <CardContent className="p-0">
+            {selectedConversation ? (
+              <div className="flex h-full flex-col">
+                {/* Conversation Header */}
+                <div className="border-b p-4">
+                  {conversations.find(c => c.id === selectedConversation) && (
+                    <div className="flex items-center gap-2">
+                      <Avatar>
+                        <AvatarImage 
+                          src={conversations.find(c => c.id === selectedConversation)?.user.image} 
+                          alt={conversations.find(c => c.id === selectedConversation)?.user.name} 
+                        />
+                        <AvatarFallback>
+                          {conversations.find(c => c.id === selectedConversation)?.user.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-semibold">
+                          {conversations.find(c => c.id === selectedConversation)?.user.name}
+                        </h3>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4">
+                  <MessageList 
+                    messages={messages[selectedConversation] || []} 
+                    currentUserId="currentUser"
+                  />
+                </div>
+                
+                {/* Message Input */}
+                <div className="border-t p-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Type a message..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                    />
+                    <Button size="icon" onClick={handleSendMessage}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-full items-center justify-center p-4">
+                <div className="text-center">
+                  <h3 className="mb-2 text-lg font-semibold">No conversation selected</h3>
+                  <p className="text-muted-foreground">
+                    Select a conversation from the list or start a new one
+                  </p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      
+      <NewConversationDialog
+        open={isNewConversationOpen}
+        onOpenChange={setIsNewConversationOpen}
+        onCreateConversation={handleCreateConversation}
+      />
+    </div>
+  );
+}
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "44f6063e-f202-4cc6-8322-185c91a72759",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "admin123",
+    "role": "admin",
+    "image": "https://randomuser.me/api/portraits/men/1.jpg",
+    "createdAt": "2025-04-23T17:21:26.059Z",
+    "updatedAt": "2025-04-23T17:21:26.059Z"
+  },
+  {
+    "id": "f20fb815-1aec-4850-a428-a8ac6e13ed1b",
+    "name": "Regular User",
+    "email": "user@example.com",
+    "password": "user123",
+    "role": "user",
+    "image": "https://randomuser.me/api/portraits/women/1.jpg",
+    "createdAt": "2025-04-23T17:21:26.060Z",
+    "updatedAt": "2025-04-23T17:21:26.060Z"
+  },
+  {
+    "id": "cfd710fb-156e-4eda-a48b-bd8068aaf37d",
+    "name": "Landlord User",
+    "email": "landlord@example.com",
+    "password": "landlord123",
+    "role": "landlord",
+    "image": "https://randomuser.me/api/portraits/men/2.jpg",
+    "createdAt": "2025-04-23T17:21:26.060Z",
+    "updatedAt": "2025-04-23T17:21:26.060Z"
+  },
+  {
+    "id": "e7f8f906-49a5-4287-801f-bbd944948309",
+    "name": "POLOK PODDAR",
+    "email": "iamproloy9@gmail.com",
+    "password": "12345",
+    "role": "user",
+    "image": "https://ui-avatars.com/api/?name=POLOK%20PODDAR&background=random",
+    "createdAt": "2025-04-23T17:22:40.412Z",
+    "updatedAt": "2025-04-23T17:22:40.413Z"
+  }
+]

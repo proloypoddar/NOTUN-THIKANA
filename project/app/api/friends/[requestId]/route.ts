@@ -15,38 +15,38 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
       );
     }
-    
+
     const { status } = await request.json();
-    
+
     if (!status || !['accepted', 'rejected'].includes(status)) {
       return NextResponse.json(
         { message: 'Invalid status' },
         { status: 400 }
       );
     }
-    
+
     await dbConnect();
-    
+
     // Get the current user's ID
     const currentUserId = session.user.id;
-    
+
     // Find the friend request
     const friendRequest = await FriendRequest.findById(params.requestId);
-    
+
     if (!friendRequest) {
       return NextResponse.json(
         { message: 'Friend request not found' },
         { status: 404 }
       );
     }
-    
+
     // Check if the current user is the receiver of the request
     if (friendRequest.receiver.toString() !== currentUserId) {
       return NextResponse.json(
@@ -54,18 +54,31 @@ export async function PUT(
         { status: 403 }
       );
     }
-    
+
     // Update the friend request
     friendRequest.status = status;
     friendRequest.updatedAt = new Date();
     await friendRequest.save();
-    
+
     // If the request was accepted, create notifications for both users
     if (status === 'accepted') {
       // Get user details
       const sender = await User.findById(friendRequest.sender);
       const receiver = await User.findById(friendRequest.receiver);
-      
+
+      // Add each user to the other's friends list
+      // Update sender's friends list
+      await User.findByIdAndUpdate(
+        friendRequest.sender,
+        { $addToSet: { friends: friendRequest.receiver } }
+      );
+
+      // Update receiver's friends list
+      await User.findByIdAndUpdate(
+        friendRequest.receiver,
+        { $addToSet: { friends: friendRequest.sender } }
+      );
+
       // Create notification for the sender
       const senderNotification = await Notification.create({
         title: 'Friend Request Accepted',
@@ -78,7 +91,7 @@ export async function PUT(
         onModel: 'FriendRequest',
         urgency: 'regular',
       });
-      
+
       // Trigger a real-time notification using Pusher
       await pusherServer.trigger(
         `${CHANNELS.NOTIFICATIONS}-${friendRequest.sender}`,
@@ -95,8 +108,33 @@ export async function PUT(
           createdAt: senderNotification.createdAt
         }
       );
+
+      // Also trigger a friends list update event
+      await pusherServer.trigger(
+        `${CHANNELS.FRIENDS}-${friendRequest.sender}`,
+        EVENTS.FRIEND_ADDED,
+        {
+          friend: {
+            id: receiver._id.toString(),
+            name: receiver.name,
+            image: receiver.image
+          }
+        }
+      );
+
+      await pusherServer.trigger(
+        `${CHANNELS.FRIENDS}-${friendRequest.receiver}`,
+        EVENTS.FRIEND_ADDED,
+        {
+          friend: {
+            id: sender._id.toString(),
+            name: sender.name,
+            image: sender.image
+          }
+        }
+      );
     }
-    
+
     return NextResponse.json({
       message: `Friend request ${status}`,
       friendRequest: {
@@ -121,29 +159,29 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
       );
     }
-    
+
     await dbConnect();
-    
+
     // Get the current user's ID
     const currentUserId = session.user.id;
-    
+
     // Find the friend request
     const friendRequest = await FriendRequest.findById(params.requestId);
-    
+
     if (!friendRequest) {
       return NextResponse.json(
         { message: 'Friend request not found' },
         { status: 404 }
       );
     }
-    
+
     // Check if the current user is the sender or receiver of the request
     if (
       friendRequest.sender.toString() !== currentUserId &&
@@ -154,16 +192,16 @@ export async function DELETE(
         { status: 403 }
       );
     }
-    
+
     // Delete the friend request
     await FriendRequest.findByIdAndDelete(params.requestId);
-    
+
     // Delete related notifications
     await Notification.deleteMany({
       relatedId: params.requestId,
       onModel: 'FriendRequest'
     });
-    
+
     return NextResponse.json({
       message: 'Friend request deleted successfully'
     });

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+<<<<<<< HEAD
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -11,10 +12,38 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
 
+=======
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
+
+const formSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+});
+
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+<<<<<<< HEAD
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +53,27 @@ export default function SignIn() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+=======
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setError(null);
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 
     try {
       const result = await signIn('credentials', {
         redirect: false,
+<<<<<<< HEAD
         email,
         password,
       });
@@ -35,11 +81,21 @@ export default function SignIn() {
       if (result?.error) {
         setError('Invalid email or password');
         setIsLoading(false);
+=======
+        email: values.email,
+        password: values.password,
+        callbackUrl,
+      });
+
+      if (!result?.ok) {
+        setError('Invalid email or password');
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
         return;
       }
 
       router.push(callbackUrl);
     } catch (error) {
+<<<<<<< HEAD
       console.error('Sign in error:', error);
       setError('An error occurred during sign in');
       setIsLoading(false);
@@ -54,19 +110,38 @@ export default function SignIn() {
   const fillTestCredentials = () => {
     setEmail('admin@example.com');
     setPassword('admin123');
+=======
+      setError('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    await signIn('google', { callbackUrl });
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
   };
 
   return (
     <div className="container flex h-screen items-center justify-center">
       <Card className="mx-auto w-full max-w-md">
+<<<<<<< HEAD
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
           <CardDescription>
             Enter your credentials to access your account
+=======
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
+          <CardDescription>
+            Enter your email and password to access your account
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
+<<<<<<< HEAD
             <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
               {error}
             </div>
@@ -113,22 +188,75 @@ export default function SignIn() {
             </Button>
           </form>
 
+=======
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+          </Form>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
+<<<<<<< HEAD
               <span className="bg-background px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>
           </div>
 
+=======
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           <Button
             variant="outline"
             type="button"
             className="w-full"
             onClick={handleGoogleSignIn}
+<<<<<<< HEAD
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -165,6 +293,23 @@ export default function SignIn() {
               Sign up
             </Link>
           </div>
+=======
+            disabled={isLoading}
+          >
+            Google
+          </Button>
+        </CardContent>
+        <CardFooter className="flex flex-wrap items-center justify-between gap-2">
+          <div className="text-sm text-muted-foreground">
+            <span>Don&apos;t have an account? </span>
+            <Link href="/auth/signup" className="text-primary underline-offset-4 hover:underline">
+              Sign up
+            </Link>
+          </div>
+          <Link href="/auth/reset-password" className="text-sm text-primary underline-offset-4 hover:underline">
+            Forgot password?
+          </Link>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
         </CardFooter>
       </Card>
     </div>

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "93d421a4-bf14-43b6-b63a-5c436442b3d5",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "admin123",
+    "role": "admin",
+    "status": "active",
+    "image": "https://ui-avatars.com/api/?name=Admin%20User&background=random",
+    "emailVerified": false,
+    "phoneVerified": false,
+    "createdAt": "2025-04-23T17:32:06.756Z",
+    "updatedAt": "2025-04-23T17:32:06.756Z"
+  },
+  {
+    "id": "7dcf220a-07d5-4a05-a375-8af4829faa97",
+    "name": "Regular User",
+    "email": "user@example.com",
+    "password": "user123",
+    "role": "user",
+    "status": "active",
+    "image": "https://ui-avatars.com/api/?name=Regular%20User&background=random",
+    "emailVerified": false,
+    "phoneVerified": false,
+    "createdAt": "2025-04-23T17:32:06.758Z",
+    "updatedAt": "2025-04-23T17:32:06.758Z"
+  },
+  {
+    "id": "66613153-d94a-41b6-87b4-383c0002dce0",
+    "name": "Landlord User",
+    "email": "landlord@example.com",
+    "password": "landlord123",
+    "role": "landlord",
+    "status": "active",
+    "image": "https://ui-avatars.com/api/?name=Landlord%20User&background=random",
+    "emailVerified": false,
+    "phoneVerified": false,
+    "createdAt": "2025-04-23T17:32:06.759Z",
+    "updatedAt": "2025-04-23T17:32:06.759Z"
+  },
+  {
+    "id": "8bc987a0-83b7-4e5e-8e99-3fac3b2a741a",
+    "name": "Agent User",
+    "email": "agent@example.com",
+    "password": "agent123",
+    "role": "agent",
+    "status": "active",
+    "image": "https://ui-avatars.com/api/?name=Agent%20User&background=random",
+    "emailVerified": false,
+    "phoneVerified": false,
+    "createdAt": "2025-04-23T17:32:06.759Z",
+    "updatedAt": "2025-04-23T17:32:06.759Z"
+  },
+  {
+    "id": "65114533-3719-4104-bc15-ba535459cb46",
+    "name": "POLOK PODDAR",
+    "email": "iamproloy9@gmail.com",
+    "password": "123456",
+    "role": "user",
+    "status": "active",
+    "image": "https://ui-avatars.com/api/?name=POLOK%20PODDAR&background=random",
+    "emailVerified": false,
+    "phoneVerified": false,
+    "createdAt": "2025-04-23T17:34:03.478Z",
+    "updatedAt": "2025-04-23T17:34:03.478Z"
+  }
+]

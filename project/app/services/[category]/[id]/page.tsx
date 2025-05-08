@@ -6,16 +6,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Phone, MapPin, Clock, Star, Mail, Globe, ArrowLeft, Loader2, Check } from 'lucide-react';
+<<<<<<< HEAD
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 
 interface Service {
   id: string;
+=======
+import Link from 'next/link';
+
+interface Service {
+  _id: string;
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
   name: string;
   category: string;
   description: string;
   address: string;
   phone: string;
+<<<<<<< HEAD
   openingHours?: string;
   website?: string;
   image: string;
@@ -24,6 +32,15 @@ interface Service {
   isVerified: boolean;
   email: string;
   reviews?: any[];
+=======
+  hours: string;
+  rating: number;
+  website: string;
+  image: string;
+  features: string[];
+  isVerified: boolean;
+  email: string;
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 }
 
 // Map of category to display name
@@ -57,12 +74,17 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
         if (!response.ok) {
           throw new Error('Failed to fetch service details');
         }
+<<<<<<< HEAD
 
         const data = await response.json();
         // Ensure the data has the correct structure
         if (data && !data.id && data._id) {
           data.id = data._id;
         }
+=======
+        
+        const data = await response.json();
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
         setService(data);
       } catch (err) {
         console.error('Error fetching service details:', err);
@@ -108,9 +130,15 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
           <div className="relative mb-6 overflow-hidden rounded-lg">
+<<<<<<< HEAD
             <img
               src={service.image}
               alt={service.name}
+=======
+            <img 
+              src={service.image} 
+              alt={service.name} 
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
               className="h-64 w-full object-cover"
             />
             {service.isVerified && (
@@ -120,6 +148,7 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
             )}
           </div>
 
+<<<<<<< HEAD
           {/* Image Gallery */}
           {service.images && service.images.length > 0 && (
             <div className="mb-6">
@@ -138,17 +167,26 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
             </div>
           )}
 
+=======
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           <h1 className="mb-2 text-3xl font-bold">{service.name}</h1>
           <div className="mb-4 flex items-center gap-2">
             <Badge variant="outline" className="capitalize">
               {service.category.replace('_', ' ')}
             </Badge>
+<<<<<<< HEAD
             {service.reviews && service.reviews.length > 0 && (
               <div className="flex items-center text-amber-500">
                 <Star className="mr-1 h-4 w-4 fill-current" />
                 <span>{service.reviews.reduce((acc, review) => acc + review.rating, 0) / service.reviews.length} / 5</span>
               </div>
             )}
+=======
+            <div className="flex items-center text-amber-500">
+              <Star className="mr-1 h-4 w-4 fill-current" />
+              <span>{service.rating} / 5</span>
+            </div>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           </div>
 
           <Tabs defaultValue="about" className="mb-8">
@@ -156,7 +194,10 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
               <TabsTrigger value="about">About</TabsTrigger>
               <TabsTrigger value="features">Features</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
+<<<<<<< HEAD
               <TabsTrigger value="reviews">Reviews</TabsTrigger>
+=======
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
             </TabsList>
             <TabsContent value="about" className="mt-4">
               <Card>
@@ -169,7 +210,11 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
+<<<<<<< HEAD
                       <span>{service.openingHours || 'Contact for hours'}</span>
+=======
+                      <span>{service.hours}</span>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                     </div>
                   </div>
                 </CardContent>
@@ -219,6 +264,7 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
                 </CardContent>
               </Card>
             </TabsContent>
+<<<<<<< HEAD
             <TabsContent value="reviews" className="mt-4">
               <Card>
                 <CardContent className="pt-6">
@@ -258,6 +304,8 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
                 </CardContent>
               </Card>
             </TabsContent>
+=======
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
           </Tabs>
         </div>
 
@@ -292,7 +340,11 @@ export default function ServiceDetailPage({ params }: { params: { category: stri
 
               <div className="mt-6">
                 <h4 className="mb-2 font-medium">Business Hours</h4>
+<<<<<<< HEAD
                 <p className="text-muted-foreground">{service.openingHours || 'Contact for hours'}</p>
+=======
+                <p className="text-muted-foreground">{service.hours}</p>
+>>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
               </div>
 
               <div className="mt-6">
