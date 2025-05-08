@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "seed:blogs": "node scripts/seed-blogs.js",
     "seed:notifications": "node scripts/seed-notifications.js",
-    "seed:all": "npm run seed:blogs && npm run seed:notifications",
+    "seed:users": "node scripts/seed-users.js",
+    "seed:all": "npm run seed:users && npm run seed:blogs && npm run seed:notifications",
     "deploy:check": "node scripts/deploy-vercel.js",
     "deploy": "npm run deploy:check && vercel"
   },
@@ -84,7 +85,7 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
-    "uuid": "^11.1.0",
+    "uuid": "^9.0.1",
     "vaul": "^0.9.9",
     "zod": "^3.23.8"
   },

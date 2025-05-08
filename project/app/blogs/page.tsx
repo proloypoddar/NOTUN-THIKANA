@@ -29,7 +29,10 @@ interface Blog {
 interface FeaturedPost {
   image: string;
   title: string;
-  author: string;
+  author: string | {
+    name: string;
+    avatar: string;
+  };
   date: string;
   readTime: string;
   excerpt: string;
@@ -75,7 +78,7 @@ export default function BlogsPage() {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        // Fetch featured post
+        // Fetch featured post from MongoDB API
         const featuredRes = await fetch('/api/blogs?featured=true&limit=1');
         if (featuredRes.ok) {
           const featuredData = await featuredRes.json();
@@ -84,7 +87,7 @@ export default function BlogsPage() {
           }
         }
 
-        // Fetch all blogs
+        // Fetch all blogs from MongoDB API
         const res = await fetch('/api/blogs');
         if (!res.ok) {
           throw new Error('Failed to fetch blogs');
@@ -110,10 +113,10 @@ export default function BlogsPage() {
         image: firstBlog.image,
         title: firstBlog.title,
         author: firstBlog.author.name,
-        date: new Date(firstBlog.date).toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+        date: new Date(firstBlog.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
         }),
         readTime: firstBlog.readTime,
         excerpt: firstBlog.excerpt
@@ -128,13 +131,13 @@ export default function BlogsPage() {
   };
 
   const filteredBlogs = blogs.filter(blog => {
-    const matchesSearch = searchQuery 
-      ? blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = searchQuery
+      ? blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
-    
+
     const matchesCategory = activeCategory === 'all' || blog.category === activeCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -171,15 +174,15 @@ export default function BlogsPage() {
                     {featuredPost.title}
                   </h1>
                   <div className="flex items-center space-x-4 mb-2">
-                    <span>{featuredPost.author}</span>
+                    <span>{typeof featuredPost.author === 'string' ? featuredPost.author : featuredPost.author.name}</span>
                     <span>•</span>
                     <span>{featuredPost.date}</span>
                     <span>•</span>
                     <span>{featuredPost.readTime}</span>
                   </div>
                   <p className="text-gray-200 mb-4 line-clamp-2">{featuredPost.excerpt}</p>
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     onClick={() => router.push(`/blogs/${featuredPost._id}`)}
                   >
                     Read More
@@ -201,7 +204,7 @@ export default function BlogsPage() {
                   </TabsTrigger>
                 ))}
               </TabsList>
-              
+
               <TabsContent value={activeCategory}>
                 {isLoading ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -282,7 +285,7 @@ export default function BlogsPage() {
                 <h3 className="text-xl font-semibold mb-4">Categories</h3>
                 <div className="space-y-2">
                   {categories.slice(1).map((category) => (
-                    <div 
+                    <div
                       key={category.id}
                       className="flex justify-between items-center p-2 hover:bg-muted rounded-md cursor-pointer"
                       onClick={() => setActiveCategory(category.id)}
@@ -305,9 +308,9 @@ export default function BlogsPage() {
                   Get the latest posts and updates delivered to your inbox.
                 </p>
                 <form className="space-y-2">
-                  <Input 
-                    type="email" 
-                    placeholder="Your email address" 
+                  <Input
+                    type="email"
+                    placeholder="Your email address"
                     className="bg-primary-foreground text-foreground"
                   />
                   <Button className="w-full bg-background text-foreground hover:bg-background/90">

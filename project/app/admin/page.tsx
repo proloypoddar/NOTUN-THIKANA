@@ -44,12 +44,25 @@ import {
 } from "@/components/ui/select";
 
 // Mock data for demonstration
-const mockUsers = [
-  { id: '1', name: 'John Doe', email: 'john@example.com', role: 'user', status: 'active', joined: '2025-01-15' },
-  { id: '2', name: 'Sarah Johnson', email: 'sarah@example.com', role: 'user', status: 'active', joined: '2025-02-03' },
-  { id: '3', name: 'Michael Chen', email: 'michael@example.com', role: 'landlord', status: 'active', joined: '2025-01-22' },
-  { id: '4', name: 'Admin User', email: 'admin@example.com', role: 'admin', status: 'active', joined: '2025-01-01' },
-  { id: '5', name: 'Aisha Patel', email: 'aisha@example.com', role: 'user', status: 'inactive', joined: '2025-02-15' },
+// User interface
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+  status: string;
+  joined: string;
+  image?: string;
+  lastActive?: string;
+}
+
+const mockUsers: User[] = [
+  { id: '1', name: 'John Doe', email: 'john@example.com', password: '123456', role: 'user', status: 'active', joined: '2025-01-15' },
+  { id: '2', name: 'Sarah Johnson', email: 'sarah@example.com', password: '123456', role: 'user', status: 'active', joined: '2025-02-03' },
+  { id: '3', name: 'Michael Chen', email: 'michael@example.com', password: '123456', role: 'landlord', status: 'active', joined: '2025-01-22' },
+  { id: '4', name: 'Admin User', email: 'admin@example.com', password: '123456', role: 'admin', status: 'active', joined: '2025-01-01' },
+  { id: '5', name: 'Aisha Patel', email: 'aisha@example.com', password: '123456', role: 'user', status: 'inactive', joined: '2025-02-15' },
 ];
 
 const mockPosts = [
@@ -82,10 +95,10 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(false);
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState<User[]>(mockUsers);
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [stats, setStats] = useState({
     counts: {
       users: 0,
@@ -213,6 +226,43 @@ export default function AdminDashboard() {
       title: 'Post Removed',
       description: `Post ID: ${id} has been removed.`,
     });
+  };
+
+  // Handle deleting a user
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/admin/users?id=${userId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Remove the user from the local state
+        setUsers(prev => prev.filter(user => user.id !== userId));
+
+        toast({
+          title: 'User Deleted',
+          description: data.message,
+        });
+      } else {
+        throw new Error(data.message || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to delete user',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handle updating a user
@@ -517,6 +567,7 @@ export default function AdminDashboard() {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
+                      <TableHead>Password</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Joined</TableHead>
@@ -534,6 +585,11 @@ export default function AdminDashboard() {
                           <TableCell className="font-medium">{user.name}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
+                            <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
+                              {user.password || 'No password set'}
+                            </code>
+                          </TableCell>
+                          <TableCell>
                             <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'landlord' ? 'outline' : 'secondary'}>
                               {user.role}
                             </Badge>
@@ -545,16 +601,26 @@ export default function AdminDashboard() {
                           </TableCell>
                           <TableCell>{user.joined}</TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setIsEditUserDialogOpen(true);
-                              }}
-                            >
-                              Edit
-                            </Button>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsEditUserDialogOpen(true);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:bg-destructive/10"
+                                onClick={() => handleDeleteUser(user.id)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

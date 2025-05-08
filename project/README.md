@@ -5,11 +5,14 @@ Notun Thikana is a comprehensive community portal designed specifically for Bang
 ## Features
 
 - **User Authentication**: Secure signup and login with email/password or Google OAuth
+- **Multi-User Support**: Multiple users can use the system simultaneously
 - **Real-time Messaging**: Chat with friends in real-time with notifications
 - **Friend Requests**: Connect with other users through a friend request system
 - **News Feed**: Latest news from trusted Bangladeshi sources
 - **Blog Posts**: Informative articles about Bangladesh and community topics
 - **Housing Listings**: Find and post housing opportunities
+- **Payment System**: Secure payment processing for property bookings
+- **Landlord Leaderboard**: Rating-based leaderboard for landlords
 - **Events**: Discover and create community events
 - **Forums**: Engage in community discussions
 - **Admin Dashboard**: Comprehensive tools for platform management
@@ -112,13 +115,25 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret (optional)
 
 The application uses NextAuth.js for authentication, supporting both email/password and Google OAuth. User data is stored in MongoDB.
 
+### Multi-User Support
+
+The system is designed to support multiple users simultaneously. Each user has their own profile, messages, and can interact with shared resources like property listings and the landlord leaderboard.
+
 ### Real-time Messaging
 
-Messaging is implemented using Pusher for real-time communication. Messages are stored in MongoDB and delivered instantly to recipients.
+Messaging is implemented using Pusher for real-time communication. Messages are stored in MongoDB and delivered instantly to recipients. Users can search for and add new contacts.
 
 ### Friend Request System
 
 Users can send friend requests to other users. Once accepted, they can start messaging each other.
+
+### Payment System
+
+The payment system allows users to make payments for property bookings. It includes payment history tracking and receipt generation. Multiple payment methods are supported.
+
+### Landlord Leaderboard
+
+Landlords are ranked based on ratings from tenants. The leaderboard showcases top landlords based on various metrics like cleanliness, communication, and value.
 
 ### News Feed
 
@@ -130,7 +145,7 @@ The blog section features articles about Bangladesh, including topics like archi
 
 ### Admin Dashboard
 
-Administrators have access to a comprehensive dashboard for managing users, content, and platform settings.
+Administrators have access to a comprehensive dashboard for managing users, content, and platform settings. Admins can view user passwords and delete users when necessary.
 
 ## Bangladesh-Specific Features
 

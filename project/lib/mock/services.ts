@@ -2,9 +2,9 @@
 export const services = [
   {
     id: "1",
-    name: "City General Hospital",
+    name: "Square Hospital",
     category: "hospital",
-    description: "A leading healthcare provider offering comprehensive medical services with state-of-the-art facilities and experienced medical professionals.",
+    description: "One of Bangladesh's premier healthcare providers offering comprehensive medical services with state-of-the-art facilities and experienced medical professionals.",
     image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format&fit=crop",
@@ -16,35 +16,35 @@ export const services = [
       "24/7 Emergency Services",
       "Specialized Departments",
       "Advanced Diagnostic Equipment",
-      "Experienced Medical Staff",
+      "Internationally Trained Medical Staff",
       "Comfortable Patient Rooms"
     ],
     isVerified: true,
-    email: "info@citygeneralhospital.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Health Avenue, Downtown",
-    website: "https://www.citygeneralhospital.com",
+    email: "info@squarehospital.com",
+    phone: "+880 2-8144400",
+    address: "18/F, Bir Uttam Qazi Nuruzzaman Sarak, West Panthapath, Dhaka 1205",
+    website: "https://www.squarehospitalbd.com",
     openingHours: "Open 24 hours",
     reviews: [
       {
-        user: { name: "John Smith", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+        user: { name: "Rahim Ahmed", image: "https://randomuser.me/api/portraits/men/1.jpg" },
         rating: 5,
         comment: "Excellent care and professional staff. The facilities are modern and clean.",
-        date: "2025-03-15"
+        date: "2023-03-15"
       },
       {
-        user: { name: "Sarah Johnson", image: "https://randomuser.me/api/portraits/women/2.jpg" },
+        user: { name: "Fatima Khan", image: "https://randomuser.me/api/portraits/women/2.jpg" },
         rating: 4,
         comment: "Good experience overall. Wait times could be shorter but the medical care was great.",
-        date: "2025-02-28"
+        date: "2023-02-28"
       }
     ]
   },
   {
     id: "2",
-    name: "Rapid Response Ambulance",
+    name: "Medinova Ambulance Service",
     category: "ambulance",
-    description: "Fast and reliable emergency medical transportation with fully equipped ambulances and trained paramedics available 24/7.",
+    description: "Fast and reliable emergency medical transportation in Dhaka with fully equipped ambulances and trained paramedics available 24/7.",
     image: "https://images.unsplash.com/photo-1587745416684-47953f16f02f?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1612824892892-4e7b9a1a3ecd?w=800&auto=format&fit=crop",
@@ -59,25 +59,25 @@ export const services = [
       "GPS Tracking"
     ],
     isVerified: true,
-    email: "dispatch@rapidresponse.com",
-    phone: "+1 (555) 911-0000",
-    address: "456 Emergency Road, Midtown",
-    website: "https://www.rapidresponseambulance.com",
+    email: "dispatch@medinova.com.bd",
+    phone: "+880 1713-377775",
+    address: "House-71/A, Road-5/A, Dhanmondi, Dhaka 1209",
+    website: "https://www.medinovabd.com",
     openingHours: "Available 24/7",
     reviews: [
       {
-        user: { name: "Michael Brown", image: "https://randomuser.me/api/portraits/men/3.jpg" },
+        user: { name: "Kamal Hossain", image: "https://randomuser.me/api/portraits/men/3.jpg" },
         rating: 5,
-        comment: "They arrived within minutes of our call. The paramedics were professional and caring.",
-        date: "2025-04-02"
+        comment: "They arrived within minutes of our call in Dhanmondi. The paramedics were professional and caring.",
+        date: "2023-04-02"
       }
     ]
   },
   {
     id: "3",
-    name: "LifeSaver Blood Bank",
+    name: "Sandhani Blood Bank",
     category: "blood-bank",
-    description: "A reliable blood bank providing safe blood products for medical emergencies and treatments with strict quality control.",
+    description: "A reliable blood bank in Bangladesh providing safe blood products for medical emergencies and treatments with strict quality control.",
     image: "https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&auto=format&fit=crop",
@@ -92,25 +92,25 @@ export const services = [
       "Emergency Supply"
     ],
     isVerified: true,
-    email: "info@lifesaverbloodbank.com",
-    phone: "+1 (555) 456-7890",
-    address: "789 Donor Street, Eastside",
-    website: "https://www.lifesaverbloodbank.com",
+    email: "info@sandhani.org",
+    phone: "+880 2-9668690",
+    address: "Sandhani, Dhaka Medical College Branch, Dhaka 1000",
+    website: "https://www.sandhani.org",
     openingHours: "Mon-Sat: 8:00 AM - 8:00 PM",
     reviews: [
       {
-        user: { name: "Emily Davis", image: "https://randomuser.me/api/portraits/women/4.jpg" },
+        user: { name: "Nusrat Jahan", image: "https://randomuser.me/api/portraits/women/4.jpg" },
         rating: 5,
-        comment: "Very organized donation process. The staff was friendly and professional.",
-        date: "2025-03-20"
+        comment: "Very organized donation process. The staff was friendly and professional. They helped me during an emergency.",
+        date: "2023-03-20"
       }
     ]
   },
   {
     id: "4",
-    name: "Gourmet Delights Catering",
+    name: "Dhanshiri Catering",
     category: "catering",
-    description: "Premium catering service offering delicious cuisine for all types of events with customizable menus and professional service.",
+    description: "Premium catering service offering authentic Bangladeshi cuisine for all types of events with customizable menus and professional service.",
     image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&auto=format&fit=crop",
@@ -118,32 +118,32 @@ export const services = [
       "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&auto=format&fit=crop"
     ],
     features: [
-      "Customizable Menus",
+      "Authentic Bengali Cuisine",
       "Professional Staff",
       "Event Planning Assistance",
-      "Diverse Cuisine Options",
+      "Diverse Menu Options",
       "Elegant Presentation"
     ],
     isVerified: true,
-    email: "events@gourmetdelights.com",
-    phone: "+1 (555) 789-0123",
-    address: "101 Culinary Boulevard, Westside",
-    website: "https://www.gourmetdelightscatering.com",
-    openingHours: "Mon-Fri: 9:00 AM - 6:00 PM",
+    email: "events@dhanshiri.com.bd",
+    phone: "+880 1713-091234",
+    address: "House 15, Road 13, Banani, Dhaka 1213",
+    website: "https://www.dhanshiricatering.com.bd",
+    openingHours: "Mon-Fri: 9:00 AM - 8:00 PM",
     reviews: [
       {
-        user: { name: "Robert Wilson", image: "https://randomuser.me/api/portraits/men/5.jpg" },
+        user: { name: "Rafiq Islam", image: "https://randomuser.me/api/portraits/men/5.jpg" },
         rating: 5,
-        comment: "The food was amazing and the service was impeccable. Our guests were very impressed.",
-        date: "2025-04-05"
+        comment: "The food was amazing and authentic. Their kacchi biryani was the highlight of our event. Our guests were very impressed.",
+        date: "2023-04-05"
       }
     ]
   },
   {
     id: "5",
-    name: "Dream Day Wedding Planners",
+    name: "Sygmaz Wedding Planners",
     category: "wedding-planning",
-    description: "Comprehensive wedding planning service that turns your dream wedding into reality with attention to every detail.",
+    description: "Comprehensive wedding planning service that turns your dream Bengali wedding into reality with attention to every detail and traditional customs.",
     image: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1519741347686-c1e331c20a2d?w=800&auto=format&fit=crop",
@@ -152,23 +152,23 @@ export const services = [
     ],
     features: [
       "Full-Service Planning",
-      "Venue Selection",
-      "Vendor Coordination",
+      "Venue Selection in Dhaka",
+      "Traditional & Modern Wedding Options",
       "Budget Management",
-      "Day-of Coordination"
+      "Holud & Gaye Holud Coordination"
     ],
     isVerified: true,
-    email: "info@dreamdayweddings.com",
-    phone: "+1 (555) 234-5678",
-    address: "202 Celebration Avenue, Uptown",
-    website: "https://www.dreamdayweddings.com",
-    openingHours: "Tue-Sat: 10:00 AM - 7:00 PM",
+    email: "info@sygmaz.com.bd",
+    phone: "+880 1841-234567",
+    address: "House 42, Road 12, Block E, Banani, Dhaka 1213",
+    website: "https://www.sygmaz.com.bd",
+    openingHours: "Tue-Sat: 10:00 AM - 8:00 PM",
     reviews: [
       {
-        user: { name: "Jennifer Taylor", image: "https://randomuser.me/api/portraits/women/6.jpg" },
+        user: { name: "Sabrina Rahman", image: "https://randomuser.me/api/portraits/women/6.jpg" },
         rating: 5,
-        comment: "They made our wedding day absolutely perfect. Every detail was handled with care.",
-        date: "2025-03-28"
+        comment: "They made our wedding day absolutely perfect. Every detail was handled with care, from the holud ceremony to the reception.",
+        date: "2023-03-28"
       }
     ]
   },
@@ -207,9 +207,9 @@ export const services = [
   },
   {
     id: "7",
-    name: "Quick Bites Food Delivery",
+    name: "Foodpanda Bangladesh",
     category: "food-delivery",
-    description: "Fast and reliable food delivery service partnering with a wide range of restaurants to bring your favorite meals to your doorstep.",
+    description: "Fast and reliable food delivery service partnering with a wide range of restaurants across Dhaka to bring your favorite meals to your doorstep.",
     image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1513639776629-7b61b0ac49cb?w=800&auto=format&fit=crop",
@@ -217,32 +217,32 @@ export const services = [
       "https://images.unsplash.com/photo-1513639776629-7b61b0ac49cb?w=800&auto=format&fit=crop"
     ],
     features: [
-      "Wide Restaurant Selection",
+      "Wide Restaurant Selection in Dhaka",
       "Real-time Order Tracking",
       "Fast Delivery",
-      "Secure Payment Options",
-      "Special Offers"
+      "Multiple Payment Options",
+      "Special Offers and Discounts"
     ],
     isVerified: true,
-    email: "orders@quickbites.com",
-    phone: "+1 (555) 456-7890",
-    address: "404 Delivery Road, Midtown",
-    website: "https://www.quickbitesfood.com",
+    email: "support@foodpanda.com.bd",
+    phone: "+880 9606-111-222",
+    address: "Rangs Eskaton, 117/A, Old Airport Road, Dhaka 1215",
+    website: "https://www.foodpanda.com.bd",
     openingHours: "Daily: 10:00 AM - 10:00 PM",
     reviews: [
       {
-        user: { name: "Lisa Anderson", image: "https://randomuser.me/api/portraits/women/8.jpg" },
+        user: { name: "Tasneem Akter", image: "https://randomuser.me/api/portraits/women/8.jpg" },
         rating: 4,
-        comment: "Consistently fast delivery and the food always arrives hot. Great service!",
-        date: "2025-04-08"
+        comment: "Consistently fast delivery in Gulshan area and the food always arrives hot. Great service!",
+        date: "2023-04-08"
       }
     ]
   },
   {
     id: "8",
-    name: "Fresh Market Grocery",
+    name: "Shwapno Superstore",
     category: "grocery-store",
-    description: "A well-stocked grocery store offering fresh produce, quality meats, international foods, and everyday essentials at competitive prices.",
+    description: "A well-stocked grocery store offering fresh produce, quality meats, local and international foods, and everyday essentials at competitive prices across Bangladesh.",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop",
     images: [
       "https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=800&auto=format&fit=crop",
@@ -250,24 +250,24 @@ export const services = [
       "https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=800&auto=format&fit=crop"
     ],
     features: [
-      "Fresh Produce",
-      "Quality Meats & Seafood",
+      "Fresh Local Produce",
+      "Quality Halal Meats & Seafood",
       "International Foods Section",
-      "Organic Options",
+      "Household Items",
       "Home Delivery"
     ],
     isVerified: true,
-    email: "info@freshmarket.com",
-    phone: "+1 (555) 567-8901",
-    address: "505 Grocery Lane, Eastside",
-    website: "https://www.freshmarketgrocery.com",
-    openingHours: "Daily: 7:00 AM - 10:00 PM",
+    email: "info@shwapno.com",
+    phone: "+880 9604-111-000",
+    address: "Gulshan-1, Dhaka 1212",
+    website: "https://www.shwapno.com",
+    openingHours: "Daily: 8:00 AM - 10:00 PM",
     reviews: [
       {
-        user: { name: "Thomas Clark", image: "https://randomuser.me/api/portraits/men/9.jpg" },
+        user: { name: "Tanvir Ahmed", image: "https://randomuser.me/api/portraits/men/9.jpg" },
         rating: 5,
-        comment: "Great selection of fresh produce and international foods. The staff is always helpful.",
-        date: "2025-03-25"
+        comment: "Great selection of fresh produce and local foods. The staff is always helpful and prices are reasonable.",
+        date: "2023-03-25"
       }
     ]
   },

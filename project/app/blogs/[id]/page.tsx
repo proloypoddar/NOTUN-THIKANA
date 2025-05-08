@@ -43,17 +43,18 @@ export default function BlogDetailPage() {
     const fetchBlogDetail = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`/api/blogs/${params.id}`);
-        
+        // Use MongoDB API to fetch blog details
+        const res = await fetch(`/api/blogs?id=${params.id}`);
+
         if (!res.ok) {
           throw new Error('Failed to fetch blog');
         }
-        
+
         const data = await res.json();
         setBlog(data);
         setLikeCount(data.likes);
-        
-        // Fetch related posts (same category)
+
+        // Fetch related posts (same category) from MongoDB API
         const relatedRes = await fetch(`/api/blogs?category=${data.category}&limit=3`);
         if (relatedRes.ok) {
           const relatedData = await relatedRes.json();
@@ -88,7 +89,10 @@ export default function BlogDetailPage() {
     }
 
     try {
+      // Use the real MongoDB API
       const increment = isLiked ? -1 : 1;
+
+      // Make an actual API call
       const response = await fetch(`/api/blogs/${params.id}`, {
         method: 'PATCH',
         headers: {
@@ -103,6 +107,11 @@ export default function BlogDetailPage() {
       } else {
         throw new Error('Failed to update like');
       }
+
+      toast({
+        title: isLiked ? "Like removed" : "Post liked",
+        description: isLiked ? "You've removed your like from this post" : "You've liked this post",
+      });
     } catch (error) {
       console.error('Error updating like:', error);
       toast({
@@ -165,9 +174,9 @@ export default function BlogDetailPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          className="mb-6" 
+        <Button
+          variant="ghost"
+          className="mb-6"
           onClick={() => router.back()}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -199,10 +208,10 @@ export default function BlogDetailPage() {
           <div className="flex items-center gap-4 text-muted-foreground text-sm">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>{new Date(blog.date).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              <span>{new Date(blog.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}</span>
             </div>
             <div className="flex items-center gap-1">
@@ -242,18 +251,18 @@ export default function BlogDetailPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-between border-t border-b py-4 mb-8">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleLike}
             className="flex items-center gap-2"
           >
             <Heart className={`h-5 w-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
             <span>{likeCount} likes</span>
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleShare}
             className="flex items-center gap-2"
           >
