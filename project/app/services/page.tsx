@@ -9,11 +9,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Filter, Phone, MapPin, Clock, Star, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 // Service category icons and labels
 const serviceCategories = [
   { value: 'all', label: 'All Services' },
@@ -30,34 +25,21 @@ const serviceCategories = [
 ];
 
 interface Service {
-<<<<<<< HEAD
-  id: string;
-=======
   _id: string;
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
   name: string;
   category: string;
   description: string;
   address: string;
   phone: string;
-<<<<<<< HEAD
-  openingHours?: string;
-  website?: string;
+  hours: string;
+  rating: number;
+  website: string;
   image: string;
   images?: string[];
   features: string[];
   isVerified: boolean;
   email: string;
   reviews?: any[];
-=======
-  hours: string;
-  rating: number;
-  website: string;
-  image: string;
-  features: string[];
-  isVerified: boolean;
-  email: string;
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
 }
 
 export default function ServicesPage() {
@@ -148,11 +130,7 @@ export default function ServicesPage() {
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
-<<<<<<< HEAD
-              <Card key={service.id} className="overflow-hidden">
-=======
               <Card key={service._id} className="overflow-hidden">
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                 <img
                   src={service.image}
                   alt={service.name}
@@ -161,53 +139,17 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle>
-<<<<<<< HEAD
-                      <Link href={`/services/${service.category}/${service.id}`} className="hover:underline">
-=======
                       <Link href={`/services/${service.category}/${service._id}`} className="hover:underline">
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                         {service.name}
                       </Link>
                     </CardTitle>
                     <Badge variant="outline" className="capitalize">
-<<<<<<< HEAD
-                      {service.category.replace('_', ' ').replace('-', ' ')}
-=======
                       {service.category.replace('_', ' ')}
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
-<<<<<<< HEAD
                   <p className="mb-4 text-muted-foreground">{service.description.length > 150 ? `${service.description.substring(0, 150)}...` : service.description}</p>
-                  <div className="space-y-2 text-sm">
-                    {service.address && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{service.address}</span>
-                      </div>
-                    )}
-                    {service.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{service.phone}</span>
-                      </div>
-                    )}
-                    {service.openingHours && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>{service.openingHours}</span>
-                      </div>
-                    )}
-                    {service.reviews && service.reviews.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-amber-500" />
-                        <span>{service.reviews.reduce((acc, review) => acc + review.rating, 0) / service.reviews.length} / 5</span>
-                      </div>
-                    )}
-=======
-                  <p className="mb-4 text-muted-foreground">{service.description}</p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -225,16 +167,11 @@ export default function ServicesPage() {
                       <Star className="h-4 w-4 text-amber-500" />
                       <span>{service.rating} / 5</span>
                     </div>
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                   </div>
                 </CardContent>
                 <CardFooter className="flex gap-2">
                   <Button className="flex-1" asChild>
-<<<<<<< HEAD
-                    <Link href={`/services/${service.category}/${service.id}`}>
-=======
                     <Link href={`/services/${service.category}/${service._id}`}>
->>>>>>> 74cd30c896a8e1e9599f3de47b7f74e6835a58ba
                       <Phone className="mr-2 h-4 w-4" />
                       View Details
                     </Link>
